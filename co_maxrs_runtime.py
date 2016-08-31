@@ -262,7 +262,7 @@ def computeEventTime(l1, l2, p1x, p1y, p2x, p2y, d_w, d_h, current_time):
     return True, finalt1, finalt2
 
 
-def setCurrentLoc(l, obj, current_time):
+def setCurrentLoc(l, obj, current_time):    # current location of object found by linear interpolation
     if l.time_initial >= l.time_final:
         raise ValueError('Degenerate Line: time_initial>=time_final')
     x = (((current_time - l.time_initial) / (l.time_final - l.time_initial)) * (l.x_final - l.x_initial)) + l.x_initial
@@ -272,33 +272,37 @@ def setCurrentLoc(l, obj, current_time):
     obj.cur_y = y
 
 
-############################################ Event Handling ################################################################################
+############################################ Event Handling ###############################################################################
 def handleEvent(e, current_lines, current_objects, total_events, kds, dict1, iteration, current_time, object_line_map, current_maxrs, d_w,
-                d_h):
+                d_h, adjMatrix):
     total_events = total_events - 1
 
     # New Sample Point Event
-    if e.event_type == Event.NEW_SAMPLE:
+    if e.event_type == Event.NEW_SAMPLE:    # line change event
         oid = e.oid1
         cur_line = object_line_map[oid]
         current_lines.remove(cur_line)
-        next_line = cur_line.line_id + 1
-        if next_line < len(dict1[oid].trajectories[iteration].path):
-            n_line = dict1[oid].trajectories[iteration].path[next_line]
-            total_events = addLineEventsToKDS(kds, n_line, total_events, current_time)
+        next_line = cur_line.line_id + 1    # next_line is the next line's id
+
+        if next_line < len(dict1[oid].trajectories[iteration].path):     # if there is a next line
+            n_line = dict1[oid].trajectories[iteration].path[next_line]  # n_line is the next line
+            total_events = addLineEventsToKDS(kds, n_line, total_events, current_time)  # add next line change event to kds
             current_lines.append(n_line)
             object_line_map[oid] = n_line
+
             cmo = dict1[n_line.grand_id]
             setCurrentLoc(n_line, cmo, current_time)
             n_line.rect = Rectangle(max(0, cmo.cur_x - d_w), max(0, cmo.cur_y - d_h),
                                     min(area.width, cmo.cur_x + d_w), min(area.height, cmo.cur_y + d_h))
+
             for l2 in current_lines:
-                if l2.grand_id != n_line.grand_id:  ###l!=n_line
+                if l2.grand_id != n_line.grand_id:  # l!=n_line
                     mo = dict1[l2.grand_id]
                     setCurrentLoc(l2, mo, current_time)
                     l2.rect = Rectangle(max(0, mo.cur_x - d_w), max(0, mo.cur_y - d_h),
                                         min(area.width, mo.cur_x + d_w), min(area.height, mo.cur_y + d_h))
-                    if isIntersecting(n_line.rect, l2.rect) == True:
+
+                    if isIntersecting(n_line.rect, l2.rect):
                         # do something
                         # dict1[l1.grand_id].int_num+=dict1[l2.grand_id].weight
                         # dict1[l2.grand_id].int_num+=dict1[l1.grand_id].weight
@@ -308,6 +312,7 @@ def handleEvent(e, current_lines, current_objects, total_events, kds, dict1, ite
                         if hasint == True and t2 >= current_time and t2 < n_line.time_final and t2 < l2.time_final:
                             # create non-intersecting event
                             total_events = addINIEventsToKDS(kds, n_line.grand_id, l2.grand_id, total_events, t2, Event.NON_INT)
+
                             # print "Adding New Non-int Event at: ",t2
                             # print l1.x_initial-d_w,l1.x_initial+d_w, l1.y_initial-d_h, l1.y_initial+d_h, l1.time_initial,
                             # l1.x_final-d_w,l1.x_final+d_w, l1.y_final-d_h, l1.y_final+d_h, l1.time_final
@@ -320,9 +325,10 @@ def handleEvent(e, current_lines, current_objects, total_events, kds, dict1, ite
                         # find the intersecting event time if there is any
                         if hasOverlap(n_line, l2, d_w, d_h):
                             hasint, t1, t2 = computeEventTime(n_line, l2, cmo.cur_x, cmo.cur_y, mo.cur_x, mo.cur_y, d_w, d_h, current_time)
-                            if hasint == True and t1 > current_time and t1 < n_line.time_final and t1 < l2.time_final:
-                                # create non-intersecting event
+                            if hasint and t1 > current_time and t1 < n_line.time_final and t1 < l2.time_final:
+                                # create intersecting event
                                 total_events = addINIEventsToKDS(kds, n_line.grand_id, l2.grand_id, total_events, t1, Event.INT)
+
                                 # print "Adding New Int Event at: ",t1
                                 # print l1.x_initial-d_w,l1.x_initial+d_w, l1.y_initial-d_h, l1.y_initial+d_h, l1.time_initial,
                                 # l1.x_final-d_w,l1.x_final+d_w, l1.y_final-d_h, l1.y_final+d_h, l1.time_final
@@ -330,6 +336,7 @@ def handleEvent(e, current_lines, current_objects, total_events, kds, dict1, ite
                                 # l2.x_final-d_w,l2.x_final+d_w, l2.y_final-d_h, l2.y_final+d_h, l2.time_fina
 
         else:
+            # there is no next line, the object disappeares
             # First check with which objects it has intersection
             # Then adjust int_num of those objects accordingly
             cmo = dict1[cur_line.grand_id]
@@ -341,26 +348,30 @@ def handleEvent(e, current_lines, current_objects, total_events, kds, dict1, ite
                 setCurrentLoc(l2, mo, current_time)
                 l2.rect = Rectangle(max(0, mo.cur_x - d_w), max(0, mo.cur_y - d_h),
                                     min(area.width, mo.cur_x + d_w), min(area.height, mo.cur_y + d_h))
-                if isIntersecting(cur_line.rect, l2.rect) == True:
-                    # remove the weight of the object
+                if isIntersecting(cur_line.rect, l2.rect):
+                    # remove the weight of the object and remove edge from adjMatrix
+                    adjMatrix[mo.object_id][cmo.object_id] = False
+                    adjMatrix[cmo.object_id][mo.object_id] = False
                     mo.int_num -= cmo.weight
-            if cmo.inSolution == True and len(current_lines) >= 1:
+
+            if cmo.inSolution and len(current_lines) >= 1:
                 ncountmax = current_maxrs.countmax - cmo.weight
-                objects = []
+                objects = []    # objects on which the new maxrs will be calculated
                 # objects2=[]
                 for l in current_lines:
                     mo = dict1[l.grand_id]
-                    if (mo.int_num + mo.weight) <= ncountmax and mo.inSolution == False:
+                    if (mo.int_num + mo.weight) <= ncountmax and mo.inSolution == False:    # object pruning
                         continue
                     # FIRST STAGE of OBJECT PRUNING
                     obj = Object(mo.cur_x, mo.cur_y, mo.weight)
                     objects.append(obj)
+
                 # print "New Sample Recomputation Event : ", current_time, ", ", len(current_lines),", ", len(objects), ", ",e.event_type
                 if len(objects) == 0:
                     for l in current_lines:
                         mo = dict1[l.grand_id]
                         obj = Object(mo.cur_x, mo.cur_y, mo.weight)
-                        objects.append(obj)
+                        objects.append(obj)     # all the objects taken !!
 
                 # recompute maxrs
                 # opt_window=process_maxrs(area, coverage, objects2)
@@ -389,9 +400,11 @@ def handleEvent(e, current_lines, current_objects, total_events, kds, dict1, ite
 
                 # Create new current_maxrs object
                 n_maxrs = CoMaxRes(current_time, 100000, nlobj, opt_window.score)
+
                 current_objects.remove(cur_line.grand_id)
                 current_trajectories.remove(dict1[cur_line.grand_id].trajectories[iteration])
                 del object_line_map[cur_line.grand_id]
+
                 return total_events, n_maxrs, True
                 # The trajectory and object is finished for this iteration
 
@@ -401,13 +414,19 @@ def handleEvent(e, current_lines, current_objects, total_events, kds, dict1, ite
 
         return total_events, current_maxrs, False
 
-    # Non-Intersecting Event
+    # Non-Intersecting Event    # OD event
     elif e.event_type == Event.NON_INT:
         # Handle the non-intersecting events
         oid1 = e.oid1
         oid2 = e.oid2
+
+        # update the rectangle graph, remove edge
+        adjMatrix[oid1][oid2] = False
+        adjMatrix[oid2][oid1] = False
+
         obj1 = dict1[oid1]
         obj2 = dict1[oid2]
+
         # subtract each other's weight
         obj1.int_num -= obj2.weight
         obj2.int_num -= obj1.weight
@@ -476,15 +495,22 @@ def handleEvent(e, current_lines, current_objects, total_events, kds, dict1, ite
         return total_events, n_maxrs, True
 
     # Intersecting Event
-    elif e.event_type == Event.INT:
+    elif e.event_type == Event.INT:     # DO event
         # Handle the intersecting events
         oid1 = e.oid1
         oid2 = e.oid2
+
+        # update rectangle graph, add edge
+        adjMatrix[oid1][oid2] = True
+        adjMatrix[oid2][oid1] = True
+
         obj1 = dict1[oid1]
         obj2 = dict1[oid2]
+
         # add each other's weight
         obj1.int_num += obj2.weight
         obj2.int_num += obj1.weight
+
         # add self weights
         maxp1 = obj1.int_num + obj1.weight
         maxp2 = obj2.int_num + obj2.weight
@@ -496,7 +522,8 @@ def handleEvent(e, current_lines, current_objects, total_events, kds, dict1, ite
         setCurrentLoc(l2, obj2, current_time)
         hasint, t1, t2 = computeEventTime(l1, l2, obj1.cur_x, obj1.cur_y, obj2.cur_x, obj2.cur_y, d_w, d_h, current_time)
         t2 += 0.001
-        if hasint == True and t2 >= current_time and t2 < l1.time_final and t2 < l2.time_final:
+
+        if hasint and t2 >= current_time and t2 < l1.time_final and t2 < l2.time_final:
             # create non-intersecting event
             total_events = addINIEventsToKDS(kds, l1.grand_id, l2.grand_id, total_events, t2, Event.NON_INT)
             # print "Adding New Non-int Event at: ",t2
@@ -505,26 +532,67 @@ def handleEvent(e, current_lines, current_objects, total_events, kds, dict1, ite
         if maxp1 <= current_maxrs.countmax or maxp2 <= current_maxrs.countmax:
             return total_events, current_maxrs, False
 
-        # otherwise recompute MaxRS
+        # check if exactly one of oid1/oid2 is inSolution
+        if (obj1.inSolution and not obj2.inSolution) or (not obj1.inSolution and obj2.inSolution):
+            # if yes, keep nobj1 as the object inSolution
+            if obj2.inSolution:
+                noid1, noid2 = oid2, oid1     # if oid2 is inSolution, swap oid1, oid2
+                nobj1, nobj2 = obj2, obj1
+
+            # check if noid2 is now neighbour to all objects inSolution
+            allAdjacent = True
+            for oid in current_maxrs.lobj:
+                if adjMatrix[noid2][oid] == False:
+                    allAdjacent = False
+                    break
+
+            # if yes, nobj2 is just added to the maxrs solution
+            if allAdjacent:
+                # check to see if nobj2 is obj2 (as a swap was done)
+                if oid2 == noid2: obj2.inSolution = True
+                else: obj1.inSolution = True
+
+                # create new list of objects inSolution
+                nlobj = current_maxrs.lobj;
+                nlobj.append(noid2);
+
+                # new solution score
+                ncountmax = current_maxrs.countmax + nobj2.weight
+
+                # create new solution object
+                n_maxrs = CoMaxRes(current_time, 100000, nlobj, ncountmax)
+                return total_events, n_maxrs, True
+
+                # if not all adjacent codes below will be executed
+
+        # else, i.e. oid1, oid2 both are not inSolution
+        # If there is a new solution, then oid1, oid2 must be part of that solution.
+        # So, we  only choose all the neighbors of o1, o2 (including o1,o2) to perform the maxrs algo
+
         objects = []
         # objects2=[]
         for l in current_lines:
+            # if not adjacent to oid1/oid2 discard
+            if adjMatrix[oid1][l.grand_id] == False and adjMatrix[oid2][l.grand_id] == False: continue
+
             mo = dict1[l.grand_id]
             # FIRST STAGE of OBJECT PRUNING
             setCurrentLoc(l, mo, current_time)
             # obj2 = Object(mo.cur_x, mo.cur_y, mo.weight)
             # objects2.append(obj2)
+
             obj = Object(mo.cur_x, mo.cur_y, mo.weight)
-            if (mo.int_num + mo.weight) <= current_maxrs.countmax and mo.inSolution == False:
-                continue
+            if (mo.int_num + mo.weight) <= current_maxrs.countmax and mo.inSolution == False: continue
+            # why the and condition is necessary ??
+
             objects.append(obj)
 
-            # recompute maxrs
-            # print "Recomputation Event : ", current_time, ", ", len(current_lines),", ", len(objects), ", ",e.event_type
-            # print area.width,", ",area.height
-            # print coverage.width, ", ",coverage.height
-            # for o in objects:
-            # print o.x,", ", o.y,", ",o.weight
+        # recompute maxrs
+        # print "Recomputation Event : ", current_time, ", ", len(current_lines),", ", len(objects), ", ",e.event_type
+        # print area.width,", ",area.height
+        # print coverage.width, ", ",coverage.height
+        # for o in objects:
+        # print o.x,", ", o.y,", ",o.weight
 
         # opt_window=process_maxrs(area, coverage, objects2)
         opt_window = process_maxrs(area, coverage, objects)
@@ -644,7 +712,7 @@ def readFromMNGT():
         val = utm.from_latlon(latitude, longitude)
         latitude = val[0]
         longitude = val[1]
-        trip_id = 1
+        trip_id = 1                    # only one trajectory for every object
         participant_id = int(row[0])
         # if participant_id not in mp:
         # mp[participant_id]= rd.uniform(5, 20)
@@ -660,7 +728,7 @@ def readFromMNGT():
     return datapoints
 
 
-################################ Main Experiment Processing ####################################################################################
+################################ Main Experiment Processing ###############################################################################
 # with open('data/gps_points_smoothed_sorted.csv', 'rb') as csvfile:
 # '''with open('gps_points_smoothed.csv', 'rb') as csvfile:'''
 
@@ -751,8 +819,6 @@ if __name__ == "__main__":
         # current_queries=[]
         object_line_map = {}
         isProcessed = {}
-
-        #reset the adjMatrix
 
         # Setting-up an overall result variable
         comaxrs = []
@@ -900,6 +966,9 @@ if __name__ == "__main__":
                 # if that time is less than t_final of both l1 and l2, insert in kds
                 # do other necessary processing for non-intersecting
                 else:
+                    adjMatrix[l1.grand_id][l2.grand_id] = False  # no edge in rectangle graph
+                    adjMatrix[l2.grand_id][l1.grand_id] = False
+
                     # find the intersecting event time if there is any
                     if hasOverlap(l1, l2, d_w, d_h):
                         hasint, t1, t2 = computeEventTime(l1, l2, l1.x_initial, l1.y_initial, l2.x_initial, l2.y_initial, d_w, d_h,
@@ -954,10 +1023,11 @@ if __name__ == "__main__":
 
                 # process the events
                 current_time = next_event
-                hlist = kds[list(kds)[0]]
+                hlist = kds[list(kds)[0]]   # hlist(list of events) contains events occuring at current time
+
                 for h in hlist:
                     total_events, nmaxrs, changed = handleEvent(h[2], current_lines, current_objects, total_events, kds, dict1, iteration,
-                                                                current_time, object_line_map, current_maxrs, d_w, d_h)
+                                                                current_time, object_line_map, current_maxrs, d_w, d_h, adjMatrix)
                     if changed:
                         print current_time
                         tempobj = []
