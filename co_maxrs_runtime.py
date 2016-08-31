@@ -606,31 +606,32 @@ def handleEvent(e, current_lines, current_objects, total_events, kds, dict1, ite
         y_co = opt_window.h
         rect = Rectangle(max(0, x_co - d_w), max(0, y_co - d_h),
                          min(area.width, x_co + d_w), min(area.height, y_co + d_h))
+
         nlobj = []
-        changed = False     # don't need this as certainly changed. not discarded beacuse no harm done, no extra complexity
+        # changed = False, don't need this as certainly changed
         for l in current_lines:
             mo = dict1[l.grand_id]
             if isWithin(mo.cur_x, mo.cur_y, rect):
-                if mo.inSolution == False:
-                    changed = True
+                # if mo.inSolution == False:
+                    # changed = True
                 nlobj.append(l.grand_id)
 
-        if changed == False:
-            return total_events, current_maxrs, False
-        else:
-            # set last solution objects insolution false
-            for oid in current_maxrs.lobj:
-                mo = dict1[oid]
-                mo.inSolution = False
+        # if changed == False:
+            # return total_events, current_maxrs, False
+        # else:
+        # set last solution objects insolution false
+        for oid in current_maxrs.lobj:
+            mo = dict1[oid]
+            mo.inSolution = False
 
-            # set new solution objects insolution true
-            for oid in nlobj:
-                mo = dict1[oid]
-                mo.inSolution = True
+        # set new solution objects insolution true
+        for oid in nlobj:
+            mo = dict1[oid]
+            mo.inSolution = True
 
-            # Create new current_maxrs object
-            n_maxrs = CoMaxRes(current_time, 100000, nlobj, opt_window.score)
-            return total_events, n_maxrs, True
+        # Create new current_maxrs object
+        n_maxrs = CoMaxRes(current_time, 100000, nlobj, opt_window.score)
+        return total_events, n_maxrs, True
 
 
 def getOpposite(f, t1, t2):
