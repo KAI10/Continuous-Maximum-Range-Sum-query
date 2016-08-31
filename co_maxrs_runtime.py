@@ -11,6 +11,7 @@ from objects import *
 from maxrs import *
 
 '''
+from bitarray import bitarray
 from Queue import PriorityQueue
 from Queue import Queue
 from collections import deque
