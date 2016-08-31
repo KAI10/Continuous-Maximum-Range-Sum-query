@@ -1,20 +1,25 @@
 import utm
 import csv
-from datetime import datetime as dt
+import time
+import heapq
+import py_treap
 import collections
+from datetime import datetime as dt
+from scipy.spatial.distance import cdist
+
 from objects import *
 from maxrs import *
+
+'''
 from Queue import PriorityQueue
 from Queue import Queue
 from collections import deque
-import py_treap
-import heapq
+
 import matplotlib.pyplot as plt
 from scipy.optimize import fsolve
-from scipy.spatial.distance import cdist
 import math
 import random as rd
-import time
+
 import matplotlib.pyplot as plt
 from sympy import *
 import scipy.optimize
@@ -25,6 +30,7 @@ from sympy import Plane, Point3D
 from sympy.geometry import Line3D, Segment3D
 from spherical_geometry.polygon import SphericalPolygon
 from matplotlib.lines import Line2D
+'''
 
 STEP = 1
 r_w = 1000
@@ -679,12 +685,14 @@ if __name__ == "__main__":
             dict1[dp.participant_id] = moving_object_1
             dict2[dp.participant_id] = 0
 
+    # NO. of objects = sizeof of dict1
+    # setup the adjacency matrix of the rectangle graph
+    numberOfObjects = len(dict1)
+    adjMatrix = np.array([[False for i in range(numberOfObjects)] for j in range(numberOfObjects)], bool)
+
     # for key, value in dict1.items():
     #    print len(value.trajectories)
     # exit()
-
-    # NO. of objects = sizeof of dict1
-    numberOfObjects = len(dict1)
 
     '''
     for key, value in dict1.items() :
@@ -715,8 +723,8 @@ if __name__ == "__main__":
     #  plt.clf()
     #
 
-
     time_iter = []
+
     # read from the file the completion time for each iteration
     with open('data/completion_time.csv', 'rb') as csvfile2:
         csvreader2 = csv.reader(csvfile2, delimiter=' ')
@@ -727,7 +735,8 @@ if __name__ == "__main__":
     allQuery = []
 
     times = []
-    ###################################### Main working loop ###############################################################################
+
+    ###################################### Main working loop #############################################################################
     for iteration in range(1):
         print iteration
         kds = py_treap.treap()
@@ -742,16 +751,19 @@ if __name__ == "__main__":
         object_line_map = {}
         isProcessed = {}
 
+        #reset the adjMatrix
+
         # Setting-up an overall result variable
         comaxrs = []
 
         # setup the lines, trajectories, etc.
         for key, value in dict1.items():
-            if iteration < len(value.trajectories):                                         # check if the object has this many trajectories
-                current_trajectories.append(value.trajectories[iteration])                  # this trajectory will be used in this iteration
-                current_lines.append(value.trajectories[iteration].path[0])                 # add first lines as current lines
-                object_line_map[value.object_id] = value.trajectories[iteration].path[0]    # keep a map of object->line
+            if iteration < len(value.trajectories):                                       # check if the object has this many trajectories
+                current_trajectories.append(value.trajectories[iteration])                # this trajectory will be used in this iteration
+                current_lines.append(value.trajectories[iteration].path[0])               # add first lines as current lines
+                object_line_map[value.object_id] = value.trajectories[iteration].path[0]  # keep a map of object->line
                 current_objects.append(value.object_id)
+
         print "Trajectories: " + str(len(current_trajectories))
         print "Lines: " + str(len(current_lines))
 
@@ -844,6 +856,7 @@ if __name__ == "__main__":
             # draw_rectangle(l.rect,0.3)
             dict1[l.grand_id].cur_x = l.x_initial
             dict1[l.grand_id].cur_y = l.y_initial
+
         # plt.axis([-5,area.width + 5,-5,area.height + 5])
         # plt.show()
         # plt.clf()
@@ -861,6 +874,10 @@ if __name__ == "__main__":
                 # do other necessary processing for intersecting
                 if isIntersecting(l1.rect, l2.rect):
                     # do something
+
+                    adjMatrix[l1.grand_id][l2.grand_id] = True  # add edge in rectangle graph
+                    adjMatrix[l2.grand_id][l1.grand_id] = True
+
                     dict1[l1.grand_id].int_num += dict1[l2.grand_id].weight  # keeping track of neighbour weight sum
                     dict1[l2.grand_id].int_num += dict1[l1.grand_id].weight
 
