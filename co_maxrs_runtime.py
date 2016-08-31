@@ -565,7 +565,7 @@ def handleEvent(e, current_lines, current_objects, total_events, kds, dict1, ite
 
                 # if not all adjacent codes below will be executed
 
-        # else, i.e. oid1, oid2 both are not inSolution
+        # else, i.e. oid1, oid2 both are not inSolution, or oid2 is not adjacent to all inSolution objects
         # If there is a new solution, then oid1, oid2 must be part of that solution.
         # So, we  only choose all the neighbors of o1, o2 (including o1,o2) to perform the maxrs algo
 
@@ -596,12 +596,18 @@ def handleEvent(e, current_lines, current_objects, total_events, kds, dict1, ite
 
         # opt_window=process_maxrs(area, coverage, objects2)
         opt_window = process_maxrs(area, coverage, objects)
+
+        # if the resulting score is not greater than current score, solution same
+        if opt_window.score <= current_maxrs.countmax:
+            return total_events, current_maxrs, False
+
+        # we have got a better, new solution
         x_co = (opt_window.l + opt_window.r) / 2.0
         y_co = opt_window.h
         rect = Rectangle(max(0, x_co - d_w), max(0, y_co - d_h),
                          min(area.width, x_co + d_w), min(area.height, y_co + d_h))
         nlobj = []
-        changed = False
+        changed = False     # don't need this as certainly changed. not discarded beacuse no harm done, no extra complexity
         for l in current_lines:
             mo = dict1[l.grand_id]
             if isWithin(mo.cur_x, mo.cur_y, rect):
