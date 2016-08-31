@@ -15,7 +15,6 @@ from Queue import PriorityQueue
 from Queue import Queue
 from collections import deque
 
-import matplotlib.pyplot as plt
 from scipy.optimize import fsolve
 import math
 import random as rd
@@ -31,6 +30,7 @@ from sympy.geometry import Line3D, Segment3D
 from spherical_geometry.polygon import SphericalPolygon
 from matplotlib.lines import Line2D
 '''
+
 
 STEP = 1
 r_w = 1000
