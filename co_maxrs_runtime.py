@@ -893,7 +893,7 @@ if __name__ == "__main__":
             l = trj.path[len(trj.path)-1]
             l.x_final -= x_min
             l.x_final += d_w
-            l.y_final = y_min
+            l.y_final -= y_min
             l.y_final += d_h
 
         print "x_max: ", x_max, ", x_min: ", x_min, ", y_max: ", y_max, ", y_min: ", y_min
