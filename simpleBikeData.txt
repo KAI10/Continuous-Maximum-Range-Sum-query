@@ -1,3 +1,4 @@
+object_id,time_stamp,type(not used in code),latitude,longitude 
 0 0 dummy 475245.596659 4974049.111000
 0 10 dummy 475265.487272 4974110.687660
 0 18 dummy 475281.327507 4974165.836950
