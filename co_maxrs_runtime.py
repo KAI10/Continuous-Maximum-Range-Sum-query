@@ -669,6 +669,10 @@ def readFromBike():
     datapoints = []
     csvfile = open('data/gps_points_smoothed_sorted.csv', 'rb')
     csvreader = csv.reader(csvfile, delimiter=',')
+
+    # ASHIK: This var is used to assign id to objects
+    nextID = 0
+
     for row in csvreader:
         '''print ', '.join(row)'''
         if row[0] == 'participant_id':
@@ -677,7 +681,17 @@ def readFromBike():
         latitude = float(row[2])
         longitude = float(row[3])
         trip_id = int(row[1])
+
+        # ASHIK: handling the mapping here
         participant_id = int(row[0])
+        if participant_id in real_id_to_object_id:  # if already in dictionary
+            participant_id = real_id_to_object_id[participant_id]  # get already assigned id
+        else:
+            real_id_to_object_id[participant_id] = nextID  # else save new id
+            object_id_to_real_id.append(participant_id)  # save the mapping
+            participant_id = nextID  # assign new id
+            nextID += 1  # increment for further use
+
         act_speed = float(row[5])
         dp = DataPoint(participant_id, trip_id, latitude, longitude, datatime, act_speed)
         datapoints.append(dp)
@@ -691,13 +705,27 @@ def readFromMS():
     datapoints = []
     csvfile = open('data/all-data-ms.csv', 'rb')
     csvreader = csv.reader(csvfile, delimiter=' ')
+
+    # ASHIK: This var is used to assign id to objects
+    nextID = 0
+
     for row in csvreader:
         '''print ', '.join(row)'''
         datatime = int(row[4])
         latitude = float(row[2])
         longitude = float(row[3])
         trip_id = int(row[1])
+
+        # ASHIK: handling the mapping here
         participant_id = int(row[0])
+        if participant_id in real_id_to_object_id:  # if already in dictionary
+            participant_id = real_id_to_object_id[participant_id]  # get already assigned id
+        else:
+            real_id_to_object_id[participant_id] = nextID  # else save new id
+            object_id_to_real_id.append(participant_id)  # save the mapping
+            participant_id = nextID  # assign new id
+            nextID += 1  # increment for further use
+
         act_speed = 20.0
         dp = DataPoint(participant_id, trip_id, latitude, longitude, datatime, act_speed)
         datapoints.append(dp)
@@ -708,20 +736,35 @@ def readFromMS():
 
 def readFromMNGT():
     datapoints = []
-    csvfile = open('data/4251.txt', 'rb')
+    csvfile = open('simpleBikeData.txt', 'rb')
     csvreader = csv.reader(csvfile, delimiter=' ')
     mp = {}
+
+    # ASHIK: This var is used to assign id to objects
+    nextID = 0
+
     for row in csvreader:
         '''print ', '.join(row)'''
-        if row[0] == 'Object_Id':
+        if row[0] == 'object_id':
             continue
+
         latitude = float(row[3])
         longitude = float(row[4])
         val = utm.from_latlon(latitude, longitude)
         latitude = val[0]
         longitude = val[1]
         trip_id = 1                    # only one trajectory for every object
+
+        # ASHIK: handling the mapping here
         participant_id = int(row[0])
+        if participant_id in real_id_to_object_id:  # if already in dictionary
+            participant_id = real_id_to_object_id[participant_id]   # get already assigned id
+        else:
+            real_id_to_object_id[participant_id] = nextID   # else save new id
+            object_id_to_real_id.append(participant_id)     # save the mapping
+            participant_id = nextID     # assign new id
+            nextID += 1                 # increment for further use
+
         # if participant_id not in mp:
         # mp[participant_id]= rd.uniform(5, 20)
         # datatime = int(row[1])*mp[participant_id]
@@ -743,12 +786,22 @@ def readFromMNGT():
 if __name__ == "__main__":
     dict1 = collections.OrderedDict()
     dict2 = {}
+
+    # ASHIK: real id is participant id in data set
+    real_id_to_object_id = {}    # ASHIK: This dictionary maps: participant_id -> object id
+    object_id_to_real_id = []   # ASHIK: This list maps: object id -> real participant_id
+
     datapoints = readFromMNGT()
 
+    # NO. of objects = NO. of ids
+    # setup the adjacency matrix of the rectangle graph
+    numberOfObjects = len(object_id_to_real_id)
+    adjMatrix = np.array([[False for i in range(numberOfObjects)] for j in range(numberOfObjects)], bool)
+
     for dp in datapoints:
-        '''print dict1'''
+        # print dict1
         if dp.participant_id in dict1:
-            ''' print "object already present" '''
+            # print "object already present"
             dict2[dp.participant_id] += 1
             if dict2[dp.participant_id] != STEP:  # STEP == 1 always, if think from start makes sense, though weird
                 continue
@@ -756,16 +809,11 @@ if __name__ == "__main__":
                 dict2[dp.participant_id] = 0
                 dict1[dp.participant_id].addPointsToTrajectory(dp.trip_id, dp.latitude, dp.longitude, dp.time, dp.act_speed)
         else:
-            ''' print "object not present" '''
+            # print "object not present"
             moving_object_1 = MovingObject(dp.participant_id)
             moving_object_1.addPointsToTrajectory(dp.trip_id, dp.latitude, dp.longitude, dp.time, dp.act_speed)
             dict1[dp.participant_id] = moving_object_1
             dict2[dp.participant_id] = 0
-
-    # NO. of objects = sizeof of dict1
-    # setup the adjacency matrix of the rectangle graph
-    numberOfObjects = len(dict1)
-    adjMatrix = np.array([[False for i in range(numberOfObjects)] for j in range(numberOfObjects)], bool)
 
     # for key, value in dict1.items():
     #    print len(value.trajectories)
@@ -838,6 +886,8 @@ if __name__ == "__main__":
                 current_lines.append(value.trajectories[iteration].path[0])               # add first lines as current lines
                 object_line_map[value.object_id] = value.trajectories[iteration].path[0]  # keep a map of object->line
                 current_objects.append(value.object_id)
+
+        # for l in current_lines: print l.grand_id
 
         print "Trajectories: " + str(len(current_trajectories))
         print "Lines: " + str(len(current_lines))
