@@ -532,7 +532,7 @@ def handleEvent(e, current_lines, current_objects, total_events, kds, dict1, ite
         if maxp1 <= current_maxrs.countmax or maxp2 <= current_maxrs.countmax:
             return total_events, current_maxrs, False
 
-        #ASHIK
+        # ASHIK
         # check if exactly one of oid1/oid2 is inSolution
         if (obj1.inSolution and not obj2.inSolution) or (not obj1.inSolution and obj2.inSolution):
             # if yes, keep nobj1 as the object inSolution
@@ -573,8 +573,10 @@ def handleEvent(e, current_lines, current_objects, total_events, kds, dict1, ite
         objects = []
         # objects2=[]
         for l in current_lines:
-            # if not adjacent to oid1/oid2 discard
-            if adjMatrix[oid1][l.grand_id] == False and adjMatrix[oid2][l.grand_id] == False: continue
+            # only take objects oid1, oid2 and objects that are both adjacent to oid1, oid2 (according to paper)
+            # the 'and' condition is necessary to let oid1, oid2,  pass
+            if (adjMatrix[oid1][l.grand_id] == False or adjMatrix[oid2][l.grand_id] == False) and (l.grand_id != oid1 and l.grand_id != oid2):
+                continue
 
             mo = dict1[l.grand_id]
             # FIRST STAGE of OBJECT PRUNING
