@@ -15,10 +15,10 @@ using namespace std;
 using namespace SpatialIndex;
 
 typedef long long ll;
+const double HORIZON = 1e10;
 
 #define mem(list, val) memset(list, (val), sizeof(list))
 #define pb push_back
-#define HORIZON 5000
 #define tol 1e-12
 #define d1 1000
 #define d2 1000
@@ -52,7 +52,7 @@ void readDataset()
             nextID++;
 
             temp.time_offset = 0;
-            temp.inst.push_back(sample(lat, lon, 0, speed));
+            temp.inst.push_back(sample(lat, lon, 0, 20));
 
             objects.push_back(temp);
         }
@@ -62,7 +62,7 @@ void readDataset()
             count = objects[pos].inst.size();
 
             ///HERE 200 IS HARD CODED TIME DIFFERENCE BETWEEN TWO CONSECUTIVE SAMPLE TIMES
-            objects[pos].inst.push_back(sample(lat, lon, count*200, speed));
+            objects[pos].inst.push_back(sample(lat, lon, count*200, 20));
         }
     }
 }
@@ -74,12 +74,12 @@ void showDataset(int ind)
         cout << objects[i].id << ":\n";
         cout << objects[i].inst.size() << endl;
 
-        if(objects[i].inst.size() <= ind+1)
+        if(objects[i].inst.size() > ind+1)
         {
             cout << objects[i].inst[ind].lat << ' ' << objects[i].inst[ind].lon << ' ' << objects[i].inst[ind].time << endl;
         }
 
-        if(objects[i].inst.size() <= ind+1)
+        if(objects[i].inst.size() > ind+1)
         {
             cout << objects[i].inst[ind+1].lat << ' ' << objects[i].inst[ind+1].lon << ' ' << objects[i].inst[ind+1].time << endl;
         }
@@ -163,7 +163,11 @@ int buildTree(Index* idx, int take)
 
 int main(int argc, char** argv)
 {
+    cout.precision(10);
     readDataset();
+
+    //cout << objects[0].inst[30].lat << ' ' << objects[0].inst[30].lon << ' ' << objects[0].inst[30].time << endl;
+    //cout << objects[0].inst[31].lat << ' ' << objects[0].inst[31].lon << ' ' << objects[0].inst[31].time << endl;
     //showDataset(69);
 
     for(int i=0;; i++)
@@ -183,9 +187,11 @@ int main(int argc, char** argv)
             return 1;
         }
 
-        //Tools::PropertySet properties = idx->GetProperties();
-        //Tools::Variant vari = properties.getProperty("IndexIdentifier");
-        //cout << "ID: " << vari.m_val.llVal << endl;
+        /*
+        Tools::PropertySet properties = idx->GetProperties();
+        Tools::Variant vari = properties.getProperty("IndexIdentifier");
+        cout << diskFileName << " ID: " << vari.m_val.llVal << endl;
+        */
 
         int totalObjects;
         totalObjects = buildTree(idx, i);
@@ -201,6 +207,9 @@ int main(int argc, char** argv)
 
     return 0;
 }
+
+
+
 
 
 

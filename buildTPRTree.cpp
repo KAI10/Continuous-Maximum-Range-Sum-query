@@ -15,10 +15,10 @@ using namespace std;
 using namespace SpatialIndex;
 
 typedef long long ll;
+const double HORIZON = 1e10;
 
 #define mem(list, val) memset(list, (val), sizeof(list))
 #define pb push_back
-#define HORIZON 5000
 #define tol 1e-12
 #define d1 1000
 #define d2 1000
@@ -49,16 +49,17 @@ void readDataset()
             real_id_to_object_id[p_id] = nextID;
             nextID++;
 
-            temp.time_offset = time;
-            temp.inst.push_back(sample(lat, lon, time-temp.time_offset, speed));
+            temp.time_offset = 0;
+            temp.inst.push_back(sample(lat, lon, 0, 20));
 
             objects.push_back(temp);
         }
         else
         {
             int pos = (*it).second;
-            double offset = objects[pos].time_offset;
-            objects[pos].inst.push_back(sample(lat, lon, time - offset, speed));
+            //double offset = objects[pos].time_offset;
+            int count = objects[pos].inst.size();
+            objects[pos].inst.push_back(sample(lat, lon, count*200, 20));
         }
     }
 }
@@ -70,12 +71,12 @@ void showDataset(int ind)
         cout << objects[i].id << ":\n";
         cout << objects[i].inst.size() << endl;
 
-        if(objects[i].inst.size() <= ind+1)
+        if(objects[i].inst.size() > ind+1)
         {
             cout << objects[i].inst[ind].lat << ' ' << objects[i].inst[ind].lon << ' ' << objects[i].inst[ind].time << endl;
         }
 
-        if(objects[i].inst.size() <= ind+1)
+        if(objects[i].inst.size() > ind+1)
         {
             cout << objects[i].inst[ind+1].lat << ' ' << objects[i].inst[ind+1].lon << ' ' << objects[i].inst[ind+1].time << endl;
         }
@@ -158,6 +159,7 @@ int buildTree(Index* idx, int take)
 
 int main(int argc, char** argv)
 {
+    cout.precision(10);
     if(argc < 2)
     {
         puts("command: ./buildTPRTree.out number");
@@ -187,10 +189,13 @@ int main(int argc, char** argv)
     */
 
     readDataset();
-    //showDataset();
+
+    //showDataset(atoi(argv[1]));
 
     int take = atoi(argv[1]), totalObjects;
     totalObjects = buildTree(idx, take);
+
+    //cout << totalObjects << endl;
 
     //cout << "building complete\n";
 
@@ -258,7 +263,6 @@ int main(int argc, char** argv)
 
     idx->buffer().flush();
     idx->flush();
-
 
     return 0;
 }

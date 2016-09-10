@@ -16,10 +16,10 @@ using namespace std;
 using namespace SpatialIndex;
 
 typedef long long ll;
+const double HORIZON = 1e10;
 
 #define mem(list, val) memset(list, (val), sizeof(list))
 #define pb push_back
-#define HORIZON 5000
 #define tol 1e-12
 #define d1 1000
 #define d2 1000
@@ -92,8 +92,11 @@ int main(int argc, char** argv)
     if(argc == 9) diskFileName = "tprtree" + to_string(atoi(argv[8]));
     else diskFileName = "tprtree";
 
+    //cout << diskFileName << endl;
+
     /// retrieve Indexpointer from disk
     Index* idx = getIndexFromDisk(diskFileName.c_str());
+
 
 
     ///build the two sample points from arguments
