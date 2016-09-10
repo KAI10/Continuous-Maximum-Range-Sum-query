@@ -1,5 +1,5 @@
 /*
- * utilities.cpp
+ * utilities.h
  *
  * Created by: Ashik <ashik@KAI10>
  * Created on: 2016-09-10
@@ -7,7 +7,7 @@
 
 /// Necessary Structures
 
- struct PT
+struct PT
 {
     double lat, lon;
     PT() {}
@@ -21,7 +21,7 @@
 struct sample
 {
     double lat, lon, time, speed;
-    sample(){}
+    sample() {}
     sample(double lt, double ln, double tm, double sp)
     {
         lat = lt;
@@ -52,8 +52,14 @@ PT getVelocity(sample &one, sample &two)
     return v;
 }
 
-inline PT getBottomLeftPoint(PT p) {return PT(p.lat - d1/2, p.lon - d2/2);}
-inline PT getUpperRightPoint(PT p) {return PT(p.lat + d1/2, p.lon + d2/2);}
+inline PT getBottomLeftPoint(PT p)
+{
+    return PT(p.lat - d1/2, p.lon - d2/2);
+}
+inline PT getUpperRightPoint(PT p)
+{
+    return PT(p.lat + d1/2, p.lon + d2/2);
+}
 
 ///inserts a moving region in tpr tree
 bool insertMovingRegion(Index *idx, sample &first, sample &second, int64_t id)
@@ -77,16 +83,19 @@ bool insertMovingRegion(Index *idx, sample &first, sample &second, int64_t id)
 
     //cout << "Moving Region Created\n";
     // insert into index along with the an object and an ID
-    try{
+    try
+    {
         idx->index().insertData(nDataLength, pData, *shape, id);
     }
-    catch(...){
+    catch(...)
+    {
         cout << "Exception caught while inserting object " << id << endl;
         return false;
     }
 
     //cout << "MovingRegion " << id << " inserted into index." << endl;
     delete shape;
+    return true;
 }
 
 bool time_compare(obj lt, obj rt)

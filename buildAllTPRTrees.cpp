@@ -38,10 +38,12 @@ void readDataset()
     ll p_id, nextID = 0;
     double lat, lon, time, speed;
 
+    int count = 0;
+
     while(scanf("%lld,%lf,%lf,%lf,%lf", &p_id, &lat, &lon, &time, &speed)!=EOF)
     {
         obj temp;
-        time *=10;
+        //time *=10;
         it = real_id_to_object_id.find(p_id); ///check if exists in map
         if(it == real_id_to_object_id.end())
         {
@@ -49,16 +51,18 @@ void readDataset()
             real_id_to_object_id[p_id] = nextID;
             nextID++;
 
-            temp.time_offset = time;
-            temp.inst.push_back(sample(lat, lon, time-temp.time_offset, speed));
+            temp.time_offset = 0;
+            temp.inst.push_back(sample(lat, lon, 0, speed));
 
             objects.push_back(temp);
         }
         else
         {
             int pos = (*it).second;
-            double offset = objects[pos].time_offset;
-            objects[pos].inst.push_back(sample(lat, lon, time - offset, speed));
+            count = objects[pos].inst.size();
+
+            ///HERE 200 IS HARD CODED TIME DIFFERENCE BETWEEN TWO CONSECUTIVE SAMPLE TIMES
+            objects[pos].inst.push_back(sample(lat, lon, count*200, speed));
         }
     }
 }
@@ -84,7 +88,7 @@ void showDataset(int ind)
     }
 }
 
-Index* createIndex(char *diskFileName)
+Index* createIndex(const char *diskFileName)
 {
     // create a property set with default values.
     // see utility.cc for all defaults  http://libspatialindex.github.io/doxygen/Utility_8cc_source.html#l00031
@@ -131,10 +135,11 @@ Index* createIndex(char *diskFileName)
 
 int buildTree(Index* idx, int take)
 {
-    int inserted = 0, count = 0;
+    int inserted = 0;
     bool ok;
     for(int i=0; i<objects.size(); i++)
     {
+        //cout << objects[i].inst.size() << endl;
         if(objects[i].inst.size() <= take+1) continue; ///this object doesn't have 'take' NO. of line segments
 
         ok = insertMovingRegion(idx, objects[i].inst[take], objects[i].inst[take+1], objects[i].id);
@@ -151,116 +156,51 @@ int buildTree(Index* idx, int take)
             idx->flush();
         }
     }
+
     return inserted;
 }
 
-///one argument will be received, 'n', meaning, build tprtree with n'th line segment of every object
 
 int main(int argc, char** argv)
 {
-    if(argc < 2)
-    {
-        puts("command: ./buildTPRTree.out number");
-        return 1;
-    }
+    readDataset();
+    //showDataset(69);
 
-    char diskFileName[] = "tprtree";
-    string fileName = string(diskFileName);
-
-    //initalise Indexpointer
-    Index* idx = 0;
-    try
+    for(int i=0;; i++)
     {
-        idx = createIndex(diskFileName);
+        string diskFileName = "tprtree" + to_string(i);
+
+        //initalise Indexpointer
+        Index* idx=0;
+        try
+        {
+            idx = createIndex(diskFileName.c_str());
+            idx->flush();
+        }
+        catch(...)
+        {
+            //cout << "exception during index creation"
+            return 1;
+        }
+
+        //Tools::PropertySet properties = idx->GetProperties();
+        //Tools::Variant vari = properties.getProperty("IndexIdentifier");
+        //cout << "ID: " << vari.m_val.llVal << endl;
+
+        int totalObjects;
+        totalObjects = buildTree(idx, i);
+        //cout << "objects = " << totalObjects << endl;
+
+        //cout << "building complete\n";
+
+        if(totalObjects == 0) break;
+
+        idx->buffer().flush();
         idx->flush();
     }
-    catch(...)
-    {
-        //cout << "exception during index creation"
-        return 1;
-    }
-
-    /*
-    Tools::PropertySet properties = idx->GetProperties();
-    Tools::Variant vari = properties.getProperty("IndexIdentifier");
-    cout << "ID: " << vari.m_val.llVal << endl;
-    */
-
-    readDataset();
-    //showDataset();
-
-    int take = atoi(argv[1]), totalObjects;
-    totalObjects = buildTree(idx, take);
-
-    //cout << "building complete\n";
-
-    /*
-    sample sam1(475245.596659, 4974049.111000, 0,20), sam2(475265.487272, 4974110.687660, 1000,20);
-    obj o2;
-
-    o2.id=243;
-
-    o2.inst.pb(sam1);
-    o2.inst.pb(sam2);
-
-    PT low, high, velo;
-    take=0;
-
-    low = getBottomLeftPoint(PT(o2.inst[take].lat, o2.inst[take].lon));
-    high = getUpperRightPoint(PT(o2.inst[take].lat, o2.inst[take].lon));
-    velo = getVelocity(o2.inst[take], o2.inst[take+1]);
-
-    double low_coords[2], high_coords[2], low_v[2];
-    low_coords[0] = low.lat;
-    low_coords[1] = low.lon;
-    high_coords[0] = high.lat;
-    high_coords[1] = high.lon;
-    low_v[0] = velo.lat;
-    low_v[1] = velo.lon;
-
-
-    SpatialIndex::IShape* shape=0;
-    ObjVisitor* visitor = new ObjVisitor;
-
-    shape = new SpatialIndex::MovingRegion(low_coords, high_coords, low_v, low_v,  o2.inst[take].time, o2.inst[take+1].time, 2);
-    //addMovingRegion(idx, disk, low_coords, high_coords, low_v, o1.inst[take].time, o1.inst[take+1].time, o1.id);
-    //insertMovingRegion(idx, disk, o2.inst[take], o2.inst[take+1], o2.id);
-    idx->index().intersectsWithQuery(*shape, *visitor);
-
-    cout << "intersects with: " << visitor->GetResultCount() << " objects\n";
-
-    int64_t nResultCount;
-    nResultCount = visitor->GetResultCount();
-
-    // get actual results
-    std::vector<SpatialIndex::IData*>& results = visitor->GetResults();
-    // an empty vector that wewill copt the results to
-    vector<SpatialIndex::IData*>* resultsCopy = new vector<SpatialIndex::IData*>();
-
-    // copy the Items into the newly allocated vector array
-    // we need to make sure to clone the actual Item instead
-    // of just the pointers, as the visitor will nuke them
-    // upon destroy
-    for (int64_t i = 0; i < nResultCount; ++i){
-        resultsCopy->push_back(dynamic_cast<SpatialIndex::IData*>(results[i]->clone()));
-    }
-
-    //cout << "Inersects with: ";
-    for (int64_t i = 0; i < nResultCount; ++i){
-        SpatialIndex::IData* data=0;
-        data = (*resultsCopy)[i];
-        if(i>0) cout << ' ';
-        cout << data->getIdentifier();
-        cout << endl;
-    }
-    */
-
-
-    idx->buffer().flush();
-    idx->flush();
-
 
     return 0;
 }
+
 
 

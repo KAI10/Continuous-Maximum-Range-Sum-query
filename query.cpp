@@ -1,6 +1,7 @@
 /*
  * query.cpp
- * command: ./query.out x1 y1 t1 x2 y2 t2 speed
+ * command: ./query.out x1 y1 t1 x2 y2 t2 speed n
+ * Here 'n' means: run query on n'th TPR tree. This argument is optional
  *
  * Created by: Ashik <ashik@KAI10>
  * Created on: 2016-09-10
@@ -25,7 +26,7 @@ typedef long long ll;
 
 #include "utilities.h"
 
-Index* getIndexFromDisk(char* diskFileName)
+Index* getIndexFromDisk(const char* diskFileName)
 {
     // create a property set with default values.
     // see utility.cc for all defaults  http://libspatialindex.github.io/doxygen/Utility_8cc_source.html#l00031
@@ -42,20 +43,20 @@ Index* getIndexFromDisk(char* diskFileName)
 
     ///don't overwrite the existing index
     var.m_varType = Tools::VT_BOOL;
-	var.m_val.bVal = false;
-	ps->setProperty("Overwrite", var);
+    var.m_val.bVal = false;
+    ps->setProperty("Overwrite", var);
 
     ///give disk file name
-	var.m_varType = Tools::VT_PCHAR;
-	var.m_val.pcVal = const_cast<char*>(diskFileName);
-	ps->setProperty("FileName", var);
+    var.m_varType = Tools::VT_PCHAR;
+    var.m_val.pcVal = const_cast<char*>(diskFileName);
+    ps->setProperty("FileName", var);
 
     ///give identifier to find index in disk, normally = 1
-	var.m_varType = Tools::VT_LONGLONG;
-	var.m_val.llVal = 1;
-	ps->setProperty("IndexIdentifier", var);
+    var.m_varType = Tools::VT_LONGLONG;
+    var.m_val.llVal = 1;
+    ps->setProperty("IndexIdentifier", var);
 
-	/// set horizon >= time difference between consecutive time samples
+    /// set horizon >= time difference between consecutive time samples
     var.m_varType = Tools::VT_DOUBLE;
     var.m_val.dblVal = HORIZON;
     ps->setProperty("Horizon", var);
@@ -67,10 +68,12 @@ Index* getIndexFromDisk(char* diskFileName)
 
     //cout << "Here\n";
     // check index is ok
-    if (!idx->index().isIndexValid()){
+    if (!idx->index().isIndexValid())
+    {
         throw "Failed to get valid index";
     }
-    else{
+    else
+    {
         //cout << "Got index" << endl;
     }
 
@@ -79,17 +82,21 @@ Index* getIndexFromDisk(char* diskFileName)
 
 int main(int argc, char** argv)
 {
-    if(argc < 8){
-        puts("run command: ./query.out x1 y1 t1 x2 y2 t2 speed");
+    if(argc < 8)
+    {
+        puts("run command: ./query.out x1 y1 t1 x2 y2 t2 speed serial");
         return 1;
     }
 
-    char diskFileName[] = "tprtree";
-	string fileName = string(diskFileName);
+    string diskFileName;
+    if(argc == 9) diskFileName = "tprtree" + to_string(atoi(argv[8]));
+    else diskFileName = "tprtree";
 
     /// retrieve Indexpointer from disk
-    Index* idx = getIndexFromDisk(diskFileName);
+    Index* idx = getIndexFromDisk(diskFileName.c_str());
 
+
+    ///build the two sample points from arguments
     sample first, second;
 
     first.lat = atof(argv[1]);
@@ -103,6 +110,8 @@ int main(int argc, char** argv)
     first.speed = atof(argv[7]);
     second.speed = first.speed;
 
+
+    ///create necessary data structures for range query
     PT low, high, velo;
     low = getBottomLeftPoint(PT(first.lat, first.lon));
     high = getUpperRightPoint(PT(first.lat, first.lon));
@@ -115,18 +124,24 @@ int main(int argc, char** argv)
     ObjVisitor* visitor = new ObjVisitor;
     shape = new SpatialIndex::MovingRegion(low_coords, high_coords, low_v, low_v, first.time, second.time, 2);
 
-    try{
+
+    ///Do the range query
+    try
+    {
         idx->index().intersectsWithQuery(*shape, *visitor);
     }
-    catch(...){
+    catch(...)
+    {
         cout << "Error doing range query.\n";
     }
+
 
     int64_t nResultCount;
     nResultCount = visitor->GetResultCount();
 
-    // get actual results
+    /// get actual results
     std::vector<SpatialIndex::IData*>& results = visitor->GetResults();
+
     // an empty vector that wewill copt the results to
     vector<SpatialIndex::IData*>* resultsCopy = new vector<SpatialIndex::IData*>();
 
@@ -134,12 +149,14 @@ int main(int argc, char** argv)
     // we need to make sure to clone the actual Item instead
     // of just the pointers, as the visitor will nuke them
     // upon destroy
-    for (int64_t i = 0; i < nResultCount; ++i){
+    for (int64_t i = 0; i < nResultCount; ++i)
+    {
         resultsCopy->push_back(dynamic_cast<SpatialIndex::IData*>(results[i]->clone()));
     }
 
     //cout << "Inersects with: ";
-    for (int64_t i = 0; i < nResultCount; ++i){
+    for (int64_t i = 0; i < nResultCount; ++i)
+    {
         SpatialIndex::IData* data=0;
         data = (*resultsCopy)[i];
         //if(i>0) cout << ' ';
@@ -150,16 +167,5 @@ int main(int argc, char** argv)
     idx->flush();
     return 0;
 }
-
-
-
-
-
-
-
-
-
-
-
 
 
