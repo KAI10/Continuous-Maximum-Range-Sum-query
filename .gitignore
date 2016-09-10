@@ -2,4 +2,7 @@
 *.iml
 *.xml
 *.pyc
+*.out
+*.dat
+*.idx
 *~
