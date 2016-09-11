@@ -1,6 +1,6 @@
 /*
  * buildTPRTree.cpp
- * command: ./buildTPRTree.out number
+ * command: ./buildTPRTree.out serial < input_data
  *
  * Created by: Ashik <ashik@KAI10>
  * Created on: 2016-09-10
@@ -32,14 +32,16 @@ vector<obj> objects;
 
 void readDataset()
 {
-    string str;
-    cin >> str;
+    char str[200];
+    gets(str);
 
     ll p_id, nextID = 0;
     double lat, lon, time, speed;
+    char ignore[20];
 
-    while(scanf("%lld,%lf,%lf,%lf,%lf", &p_id, &lat, &lon, &time, &speed)!=EOF)
+    while(scanf("%lld %lf %s %lf %lf", &p_id, &time, ignore, &lat, &lon)!=EOF)
     {
+    	//cout << p_id << ' ' << time << endl;
         obj temp;
         time *=10;
         it = real_id_to_object_id.find(p_id); ///check if exists in map
@@ -49,17 +51,17 @@ void readDataset()
             real_id_to_object_id[p_id] = nextID;
             nextID++;
 
-            temp.time_offset = 0;
-            temp.inst.push_back(sample(lat, lon, 0, 20));
+            temp.time_offset = time;
+            temp.inst.push_back(sample(lat, lon, time-temp.time_offset, 20));
 
             objects.push_back(temp);
         }
         else
         {
             int pos = (*it).second;
-            //double offset = objects[pos].time_offset;
-            int count = objects[pos].inst.size();
-            objects[pos].inst.push_back(sample(lat, lon, count*200, 20));
+            double offset = objects[pos].time_offset;
+            //int count = objects[pos].inst.size();
+            objects[pos].inst.push_back(sample(lat, lon, time-offset, 20));
         }
     }
 }
@@ -85,7 +87,7 @@ void showDataset(int ind)
     }
 }
 
-Index* createIndex(char *diskFileName)
+Index* createIndex(char *diskFileName, unsigned long capacity)
 {
     // create a property set with default values.
     // see utility.cc for all defaults  http://libspatialindex.github.io/doxygen/Utility_8cc_source.html#l00031
@@ -108,6 +110,15 @@ Index* createIndex(char *diskFileName)
     var.m_varType = Tools::VT_DOUBLE;
     var.m_val.dblVal = HORIZON;
     ps->setProperty("Horizon", var);
+
+    var.m_varType = Tools::VT_ULONG;
+    var.m_val.ulVal = capacity;
+    ps->setProperty("IndexCapacity", var);
+
+    //set leaf capacity
+    var.m_varType = Tools::VT_ULONG;
+    var.m_val.ulVal = capacity;
+    ps->setProperty("LeafCapacity", var);
 
     //cout << "property setting complete\n";
     // initalise index
@@ -148,7 +159,7 @@ int buildTree(Index* idx, int take)
 
         if(inserted % 1000 == 0)
         {
-            idx->buffer().flush();
+            //idx->buffer().flush();
             idx->flush();
         }
     }
@@ -162,9 +173,13 @@ int main(int argc, char** argv)
     cout.precision(10);
     if(argc < 2)
     {
-        puts("command: ./buildTPRTree.out number");
+        puts("command: ./buildTPRTree.out serial < input_data");
         return 1;
     }
+
+    readDataset();
+
+    unsigned long capacity = objects.size();
 
     char diskFileName[] = "tprtree";
     string fileName = string(diskFileName);
@@ -173,7 +188,7 @@ int main(int argc, char** argv)
     Index* idx = 0;
     try
     {
-        idx = createIndex(diskFileName);
+        idx = createIndex(diskFileName, capacity);
         idx->flush();
     }
     catch(...)
@@ -187,8 +202,6 @@ int main(int argc, char** argv)
     Tools::Variant vari = properties.getProperty("IndexIdentifier");
     cout << "ID: " << vari.m_val.llVal << endl;
     */
-
-    readDataset();
 
     //showDataset(atoi(argv[1]));
 

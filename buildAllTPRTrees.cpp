@@ -1,6 +1,6 @@
 /*
- * buildTPRTree.cpp
- * command: ./buildTPRTree.out number
+ * buildAllTPRTrees.cpp
+ * command: ./buildAllTPRTrees.out < input_data
  *
  * Created by: Ashik <ashik@KAI10>
  * Created on: 2016-09-10
@@ -32,18 +32,18 @@ vector<obj> objects;
 
 void readDataset()
 {
-    string str;
-    cin >> str;
+    char str[200];
+    gets(str);
 
     ll p_id, nextID = 0;
     double lat, lon, time, speed;
+    char ignore[20];
 
-    int count = 0;
-
-    while(scanf("%lld,%lf,%lf,%lf,%lf", &p_id, &lat, &lon, &time, &speed)!=EOF)
+    while(scanf("%lld %lf %s %lf %lf", &p_id, &time, ignore, &lat, &lon)!=EOF)
     {
+    	//cout << p_id << ' ' << time << endl;
         obj temp;
-        //time *=10;
+        time *=10;
         it = real_id_to_object_id.find(p_id); ///check if exists in map
         if(it == real_id_to_object_id.end())
         {
@@ -51,18 +51,17 @@ void readDataset()
             real_id_to_object_id[p_id] = nextID;
             nextID++;
 
-            temp.time_offset = 0;
-            temp.inst.push_back(sample(lat, lon, 0, 20));
+            temp.time_offset = time;
+            temp.inst.push_back(sample(lat, lon, time-temp.time_offset, 20));
 
             objects.push_back(temp);
         }
         else
         {
             int pos = (*it).second;
-            count = objects[pos].inst.size();
-
-            ///HERE 200 IS HARD CODED TIME DIFFERENCE BETWEEN TWO CONSECUTIVE SAMPLE TIMES
-            objects[pos].inst.push_back(sample(lat, lon, count*200, 20));
+            double offset = objects[pos].time_offset;
+            //int count = objects[pos].inst.size();
+            objects[pos].inst.push_back(sample(lat, lon, time-offset, 20));
         }
     }
 }
@@ -88,7 +87,7 @@ void showDataset(int ind)
     }
 }
 
-Index* createIndex(const char *diskFileName)
+Index* createIndex(const char *diskFileName, unsigned long capacity)
 {
     // create a property set with default values.
     // see utility.cc for all defaults  http://libspatialindex.github.io/doxygen/Utility_8cc_source.html#l00031
@@ -111,6 +110,15 @@ Index* createIndex(const char *diskFileName)
     var.m_varType = Tools::VT_DOUBLE;
     var.m_val.dblVal = HORIZON;
     ps->setProperty("Horizon", var);
+
+    var.m_varType = Tools::VT_ULONG;
+    var.m_val.ulVal = capacity;
+    ps->setProperty("IndexCapacity", var);
+
+    //set leaf capacity
+    var.m_varType = Tools::VT_ULONG;
+    var.m_val.ulVal = capacity;
+    ps->setProperty("LeafCapacity", var);
 
     //cout << "property setting complete\n";
     // initalise index
@@ -152,7 +160,7 @@ int buildTree(Index* idx, int take)
 
         if(inserted % 1000 == 0)
         {
-            idx->buffer().flush();
+            //idx->buffer().flush();
             idx->flush();
         }
     }
@@ -163,12 +171,16 @@ int buildTree(Index* idx, int take)
 
 int main(int argc, char** argv)
 {
+    const clock_t begin_time = clock();
+
     cout.precision(10);
     readDataset();
 
     //cout << objects[0].inst[30].lat << ' ' << objects[0].inst[30].lon << ' ' << objects[0].inst[30].time << endl;
     //cout << objects[0].inst[31].lat << ' ' << objects[0].inst[31].lon << ' ' << objects[0].inst[31].time << endl;
     //showDataset(69);
+
+    unsigned long capacity = objects.size();
 
     for(int i=0;; i++)
     {
@@ -178,7 +190,7 @@ int main(int argc, char** argv)
         Index* idx=0;
         try
         {
-            idx = createIndex(diskFileName.c_str());
+            idx = createIndex(diskFileName.c_str(), capacity);
             idx->flush();
         }
         catch(...)
@@ -204,6 +216,8 @@ int main(int argc, char** argv)
         idx->buffer().flush();
         idx->flush();
     }
+
+    cout << "elapsed time: " << double( clock () - begin_time ) /  CLOCKS_PER_SEC << "seconds\n";
 
     return 0;
 }

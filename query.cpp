@@ -1,6 +1,6 @@
 /*
  * query.cpp
- * command: ./query.out x1 y1 t1 x2 y2 t2 speed n
+ * command: ./query.out x1 y1 t1 x2 y2 t2 speed capacity n
  * Here 'n' means: run query on n'th TPR tree. This argument is optional
  *
  * Created by: Ashik <ashik@KAI10>
@@ -26,7 +26,7 @@ const double HORIZON = 1e10;
 
 #include "utilities.h"
 
-Index* getIndexFromDisk(const char* diskFileName)
+Index* getIndexFromDisk(const char* diskFileName, unsigned long capacity)
 {
     // create a property set with default values.
     // see utility.cc for all defaults  http://libspatialindex.github.io/doxygen/Utility_8cc_source.html#l00031
@@ -61,6 +61,15 @@ Index* getIndexFromDisk(const char* diskFileName)
     var.m_val.dblVal = HORIZON;
     ps->setProperty("Horizon", var);
 
+    var.m_varType = Tools::VT_ULONG;
+    var.m_val.ulVal = capacity;
+    ps->setProperty("IndexCapacity", var);
+
+    //set leaf capacity
+    var.m_varType = Tools::VT_ULONG;
+    var.m_val.ulVal = capacity;
+    ps->setProperty("LeafCapacity", var);
+
     //cout << "property setting complete\n";
     // initalise index
     Index* idx = new Index(*ps);
@@ -82,21 +91,21 @@ Index* getIndexFromDisk(const char* diskFileName)
 
 int main(int argc, char** argv)
 {
-    if(argc < 8)
+    if(argc < 9)
     {
-        puts("run command: ./query.out x1 y1 t1 x2 y2 t2 speed serial");
+        puts("command: ./query.out x1 y1 t1 x2 y2 t2 speed capacity n");
         return 1;
     }
 
     string diskFileName;
-    if(argc == 9) diskFileName = "tprtree" + to_string(atoi(argv[8]));
+    if(argc == 10) diskFileName = "tprtree" + to_string(atoi(argv[9]));
     else diskFileName = "tprtree";
 
     //cout << diskFileName << endl;
+    unsigned long capacity = atol(argv[8]);
 
     /// retrieve Indexpointer from disk
-    Index* idx = getIndexFromDisk(diskFileName.c_str());
-
+    Index* idx = getIndexFromDisk(diskFileName.c_str(), capacity);
 
 
     ///build the two sample points from arguments
@@ -146,28 +155,32 @@ int main(int argc, char** argv)
     std::vector<SpatialIndex::IData*>& results = visitor->GetResults();
 
     // an empty vector that wewill copt the results to
-    vector<SpatialIndex::IData*>* resultsCopy = new vector<SpatialIndex::IData*>();
+    //vector<SpatialIndex::IData*>* resultsCopy = new vector<SpatialIndex::IData*>();
 
     // copy the Items into the newly allocated vector array
     // we need to make sure to clone the actual Item instead
     // of just the pointers, as the visitor will nuke them
     // upon destroy
+    /*
     for (int64_t i = 0; i < nResultCount; ++i)
     {
         resultsCopy->push_back(dynamic_cast<SpatialIndex::IData*>(results[i]->clone()));
     }
+    */
 
     //cout << "Inersects with: ";
     for (int64_t i = 0; i < nResultCount; ++i)
     {
         SpatialIndex::IData* data=0;
-        data = (*resultsCopy)[i];
+        data = results[i];
+        //data = (*results)[i];
         //if(i>0) cout << ' ';
-        cout << data->getIdentifier() << endl;
+        printf("%ld\n", data->getIdentifier());
+        //cout << data->getIdentifier() << endl;
         //cout << endl;
     }
 
-    idx->flush();
+    //idx->flush();
     return 0;
 }
 
