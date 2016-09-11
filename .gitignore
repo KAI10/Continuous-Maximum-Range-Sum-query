@@ -5,5 +5,5 @@
 *.out
 *.dat
 *.idx
-log
+log*
 *~
