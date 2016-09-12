@@ -91,6 +91,8 @@ Index* getIndexFromDisk(const char* diskFileName, unsigned long capacity)
 
 int main(int argc, char** argv)
 {
+    const clock_t begin_time = clock();
+
     if(argc < 9)
     {
         puts("command: ./query.out x1 y1 t1 x2 y2 t2 speed capacity n");
@@ -179,6 +181,8 @@ int main(int argc, char** argv)
         //cout << data->getIdentifier() << endl;
         //cout << endl;
     }
+
+    cout << "elapsed time: " << double( clock () - begin_time ) /  CLOCKS_PER_SEC << " seconds\n";
 
     //idx->flush();
     return 0;
