@@ -217,7 +217,7 @@ int main(int argc, char** argv)
         idx->flush();
     }
 
-    cout << "elapsed time: " << double( clock () - begin_time ) /  CLOCKS_PER_SEC << "seconds\n";
+    cout << "elapsed time: " << double( clock () - begin_time ) /  CLOCKS_PER_SEC << " seconds\n";
 
     return 0;
 }
