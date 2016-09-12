@@ -1,5 +1,8 @@
 import numpy as np
 
+# FOR MAKING TIME SAMPLING UNIFORM
+delta_t = 100
+
 
 # Corresponds to the line-segment for each object, consists of a start time and end time
 class Line:
@@ -49,6 +52,11 @@ class Trajectory:
         calcspeed = 0.0
         if (self.x_last == 0 and self.y_last == 0 and self.t_last == 0) == False:
             t1 = t1 - self.offset
+
+            # MAKING TIME SAMPLING UNIFORM
+            # (x1,y1,t1) is the new time sample
+            # t1 = self.t_last + delta_t  # UNCOMMENT THIS LINE
+
             distance = ((np.sqrt(np.power(self.x_last - x1, 2) + np.power(self.y_last - y1, 2))) / 1000.0) / 1.6093  # dist measured in mile
             td = t1 - self.t_last
             if td > 0:
