@@ -7,6 +7,7 @@ import collections
 from datetime import datetime as dt
 from scipy.spatial.distance import cdist
 
+import sys
 from objects import *
 from maxrs import *
 
@@ -277,8 +278,25 @@ def handleEvent(e, current_lines, current_objects, total_events, kds, dict1, ite
                 d_h, adjMatrix):
     total_events = total_events - 1
 
+    # print("HANDLE EVENT")
+
     # New Sample Point Event
     if e.event_type == Event.NEW_SAMPLE:    # line change event
+        # print("Line Change Event")
+
+        # ADD ONE LINE CHANGE EVENT FOR NEXT SAMPLE HERE
+
+        # FOR EACH line IN current_lines DO WHAT NEEDS TO BE DONE IF THERE IS NEXT SAMPLE (FOR THIS OBJECT) OR NOT
+        # I.E KEEP/REMOVE FROM current_lines, UPDATE adjMatrix, neighbour weight sum
+
+        # RUN AN O(n^2) LOOP HERE (LIKE THE ONE IN MAIN)
+        # for i in range (len(current_lines))
+        #       l1 = current_lines[i]
+        #       for j in range(i+1, len(current_lines))
+        #           l2 = current_lines[j]
+        #           ......
+        #           ........
+
         oid = e.oid1
         cur_line = object_line_map[oid]
         current_lines.remove(cur_line)
@@ -286,7 +304,10 @@ def handleEvent(e, current_lines, current_objects, total_events, kds, dict1, ite
 
         if next_line < len(dict1[oid].trajectories[iteration].path):     # if there is a next line
             n_line = dict1[oid].trajectories[iteration].path[next_line]  # n_line is the next line
+
+            # LINE CHANGE EVENT BEING ADDED
             total_events = addLineEventsToKDS(kds, n_line, total_events, current_time)  # add next line change event to kds
+
             current_lines.append(n_line)
             object_line_map[oid] = n_line
 
@@ -416,6 +437,7 @@ def handleEvent(e, current_lines, current_objects, total_events, kds, dict1, ite
 
     # Non-Intersecting Event    # OD event
     elif e.event_type == Event.NON_INT:
+        # print("OD")
         # Handle the non-intersecting events
         oid1 = e.oid1
         oid2 = e.oid2
@@ -496,6 +518,7 @@ def handleEvent(e, current_lines, current_objects, total_events, kds, dict1, ite
 
     # Intersecting Event
     elif e.event_type == Event.INT:     # DO event
+        # print("DO")
         # Handle the intersecting events
         oid1 = e.oid1
         oid2 = e.oid2
@@ -536,6 +559,10 @@ def handleEvent(e, current_lines, current_objects, total_events, kds, dict1, ite
         # check if exactly one of oid1/oid2 is inSolution
         if (obj1.inSolution and not obj2.inSolution) or (not obj1.inSolution and obj2.inSolution):
             # if yes, keep nobj1 as the object inSolution
+
+            noid1, noid2 = oid1, oid2
+            nobj1, nobj2 = obj1, obj2
+
             if obj2.inSolution:
                 noid1, noid2 = oid2, oid1     # if oid2 is inSolution, swap oid1, oid2
                 nobj1, nobj2 = obj2, obj1
@@ -549,6 +576,10 @@ def handleEvent(e, current_lines, current_objects, total_events, kds, dict1, ite
 
             # if yes, nobj2 is just added to the maxrs solution
             if allAdjacent:
+                # print("LEMMA 5 WORKED")
+
+                # print (current_maxrs.lobj)
+
                 # check to see if nobj2 is obj2 (as a swap was done)
                 if oid2 == noid2: obj2.inSolution = True
                 else: obj1.inSolution = True
@@ -556,6 +587,8 @@ def handleEvent(e, current_lines, current_objects, total_events, kds, dict1, ite
                 # create new list of objects inSolution
                 nlobj = current_maxrs.lobj;
                 nlobj.append(noid2);
+
+                # print(nlobj)
 
                 # new solution score
                 ncountmax = current_maxrs.countmax + nobj2.weight
@@ -572,7 +605,9 @@ def handleEvent(e, current_lines, current_objects, total_events, kds, dict1, ite
 
         objects = []
         # objects2=[]
+
         for l in current_lines:
+            # ASHIK
             # only take objects oid1, oid2 and objects that are both adjacent to oid1, oid2 (according to paper)
             # the 'and' condition is necessary to let oid1, oid2,  pass
             # because in adjMatrix, adjMatrix[oid1][oid1] == False, same for oid2
@@ -601,7 +636,7 @@ def handleEvent(e, current_lines, current_objects, total_events, kds, dict1, ite
         # opt_window=process_maxrs(area, coverage, objects2)
         opt_window = process_maxrs(area, coverage, objects)
 
-        # if the resulting score is not greater than current score, solution same
+        # if the resulting score is not greater than current score, then solution remains same
         if opt_window.score <= current_maxrs.countmax:
             return total_events, current_maxrs, False
 
@@ -668,7 +703,7 @@ def isWithin(x, y, rect):
     return False
 
 
-def readFromBike():
+def readFromBike(num):
     datapoints = []
     csvfile = open('data/gps_points_smoothed_sorted.csv', 'rb')
     csvreader = csv.reader(csvfile, delimiter=',')
@@ -701,7 +736,7 @@ def readFromBike():
 
     # flow_queue.append(dp)
     # datapoints.sort(key=lambda x: x.time, reverse=False)
-    return datapoints
+    return nextID, datapoints
 
 
 def readFromMS():
@@ -734,52 +769,63 @@ def readFromMS():
         datapoints.append(dp)
     # flow_queue.append(dp)
     # datapoints.sort(key=lambda x: x.time, reverse=False)
-    return datapoints
+    return nextID, datapoints
 
 
-def readFromMNGT():
+# num = NO. of files containing input dataset
+# files names are assumed to be: name_0, name_1 ... and so on (for example 3984.txt_0, ...)
+def readFromMNGT(num):
     datapoints = []
-    csvfile = open('simpleBikeData.txt', 'rb')
-    csvreader = csv.reader(csvfile, delimiter=' ')
-    mp = {}
+
+    baseFileName = 'simpleBikeData.txt';
 
     # ASHIK: This var is used to assign id to objects
     nextID = 0
 
-    for row in csvreader:
-        '''print ', '.join(row)'''
-        if row[0] == 'object_id':
-            continue
+    for i in range(num):
+        name = baseFileName + '_' + str(i)
+        csvfile = open(name, 'rb')
+        csvreader = csv.reader(csvfile, delimiter=' ')
+        mp = {}
 
-        latitude = float(row[3])
-        longitude = float(row[4])
-        val = utm.from_latlon(latitude, longitude)
-        latitude = val[0]
-        longitude = val[1]
-        trip_id = 1                    # only one trajectory for every object
+        # this map will be used for all the files, so clear it every time
+        real_id_to_object_id.clear()
 
-        # ASHIK: handling the mapping here
-        participant_id = int(row[0])
-        if participant_id in real_id_to_object_id:  # if already in dictionary
-            participant_id = real_id_to_object_id[participant_id]   # get already assigned id
-        else:
-            real_id_to_object_id[participant_id] = nextID   # else save new id
-            object_id_to_real_id.append(participant_id)     # save the mapping
-            participant_id = nextID     # assign new id
-            nextID += 1                 # increment for further use
+        for row in csvreader:
+            '''print ', '.join(row)'''
+            if row[0] == 'Object_Id':
+                continue
 
-        # if participant_id not in mp:
-        # mp[participant_id]= rd.uniform(5, 20)
-        # datatime = int(row[1])*mp[participant_id]
-        datatime = int(row[1]) * 10
-        act_speed = 20.0
-        dp = DataPoint(participant_id, trip_id, latitude, longitude, datatime, act_speed)
-        datapoints.append(dp)
-        # if participant_id<10:
-        # print dp.participant_id, ' ', dp.trip_id, ' ', dp.time, ' ', dp.latitude, ' ', dp.longitude
-    # flow_queue.append(dp)
+            latitude = float(row[3])
+            longitude = float(row[4])
+            #val = utm.from_latlon(latitude, longitude)
+            #latitude = val[0]
+            #longitude = val[1]
+            trip_id = 1    # only one trajectory for every object
+
+            # ASHIK: handling the mapping here
+            participant_id = int(row[0])
+            if participant_id in real_id_to_object_id:  # if already in dictionary
+                participant_id = real_id_to_object_id[participant_id]   # get already assigned id
+            else:
+                real_id_to_object_id[participant_id] = nextID     # else save new id
+                # object_id_to_real_id.append(participant_id)       # save the mapping
+                participant_id = nextID     # assign new id
+                nextID += 1                 # increment for further use
+
+            # if participant_id not in mp:
+            # mp[participant_id]= rd.uniform(5, 20)
+            # datatime = int(row[1])*mp[participant_id]
+            datatime = int(row[1]) * 10
+            act_speed = 20.0
+            dp = DataPoint(participant_id, trip_id, latitude, longitude, datatime, act_speed)
+            datapoints.append(dp)
+            # if participant_id<10:
+            # print dp.participant_id, ' ', dp.trip_id, ' ', dp.time, ' ', dp.latitude, ' ', dp.longitude
+
+        # flow_queue.append(dp)
     # datapoints.sort(key=lambda x: x.time, reverse=False)
-    return datapoints
+    return nextID, datapoints
 
 
 ################################ Main Experiment Processing ###############################################################################
@@ -791,14 +837,17 @@ if __name__ == "__main__":
     dict2 = {}
 
     # ASHIK: real id is participant id in data set
-    real_id_to_object_id = {}    # ASHIK: This dictionary maps: participant_id -> object id
-    object_id_to_real_id = []   # ASHIK: This list maps: object id -> real participant_id
+    real_id_to_object_id = {}    # ASHIK: This dictionary maps: participant_id -> object id, not valid for MNGT due to multiple files
+    object_id_to_real_id = []   # ASHIK: This list maps: object id -> real participant_id, not valid for MNGT due to multiple files
 
-    datapoints = readFromMNGT()
+    numberOfObjects, datapoints = readFromMNGT(1)  # sending NO. of files as parameter
+
+    # print(numberOfObjects, len(datapoints))
+    # sys.exit("DONE")
 
     # NO. of objects = NO. of ids
     # setup the adjacency matrix of the rectangle graph
-    numberOfObjects = len(object_id_to_real_id)
+    # numberOfObjects = len(object_id_to_real_id)
     adjMatrix = np.array([[False for i in range(numberOfObjects)] for j in range(numberOfObjects)], bool)
 
     for dp in datapoints:
@@ -919,8 +968,8 @@ if __name__ == "__main__":
         x_min = 100000000   # +INF
         y_max = 0
         y_min = 100000000
-        d_w = coverage.width / 2.0   # 100
-        d_h = coverage.height / 2.0  # 100
+        d_w = coverage.width / 2.0   # r_w / 2
+        d_h = coverage.height / 2.0  # r_h / 2
 
         for trj in current_trajectories:
             for l in trj.path:
@@ -972,7 +1021,8 @@ if __name__ == "__main__":
         # plt.show()
         # plt.clf()
 
-        # add the line new sample events
+        # LINE CHANGE EVENT BEING ADDED
+        # INSTEAD OF LOOP, ADD ONLY ONE LINE CHANGE EVENT HERE
         for line in current_lines:
             total_events = addLineEventsToKDS(kds, line, total_events, current_time)    # add line change events in kds for current lines
 
@@ -1067,7 +1117,7 @@ if __name__ == "__main__":
                 mo.inSolution = True
                 current_maxrs.lobj.append(l.grand_id)
 
-        print current_maxrs.t1, ", ", current_maxrs.t2, ", ", len(current_maxrs.lobj), ", ", current_maxrs.countmax
+        print "Preliminary Result: ", current_maxrs.t1, ", ", current_maxrs.t2, ", ", len(current_maxrs.lobj), ", ", current_maxrs.countmax
 
         # While there are events, keep processing
         next_event = list(kds)[0]
@@ -1075,6 +1125,10 @@ if __name__ == "__main__":
         # next_query=current_queries[0][0]
         # if len(current_lines) <153:
         # break;
+
+        print("NO. of entries in kds: ", len(kds))
+        events_processed = 0;
+
         t1 = time.clock()
         while len(kds) != 0:
             if len(current_lines) < 500:
@@ -1086,7 +1140,10 @@ if __name__ == "__main__":
                 current_time = next_event
                 hlist = kds[list(kds)[0]]   # hlist(list of events) contains events occuring at current time
 
+                # print("Size of hlist: ", len(hlist))
+
                 for h in hlist:
+                    events_processed += 1
                     total_events, nmaxrs, changed = handleEvent(h[2], current_lines, current_objects, total_events, kds, dict1, iteration,
                                                                 current_time, object_line_map, current_maxrs, d_w, d_h, adjMatrix)
                     if changed:
@@ -1098,6 +1155,8 @@ if __name__ == "__main__":
                         comaxrs.append(tempmaxrs)
                         current_maxrs = nmaxrs
                 del kds[list(kds)[0]]
+
+        print("NO. of events processed: ", events_processed)
 
         t2 = time.clock()
         print t2 - t1
