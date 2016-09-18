@@ -66,8 +66,8 @@ bool insertMovingRegion(Index *idx, sample &first, sample &second, int64_t id)
 {
     PT low, high, velo; ///velo -> velocity vector of dula rectangle
 
-    low = getBottomLeftPoint(PT(first.lat, second.lon));
-    high = getUpperRightPoint(PT(first.lat, second.lon));
+    low = getBottomLeftPoint(PT(first.lat, first.lon));
+    high = getUpperRightPoint(PT(first.lat, first.lon));
     velo = getVelocity(first, second);
 
     double start = first.time, finish = second.time;
