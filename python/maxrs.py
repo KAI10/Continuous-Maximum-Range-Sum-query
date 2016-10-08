@@ -8,7 +8,7 @@ Last Modified Date: September 21 2015
 import sys
 import os
 import copy
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 import pdb
 
 #global variable
