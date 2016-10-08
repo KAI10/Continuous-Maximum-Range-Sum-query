@@ -5,9 +5,13 @@
  * Created on: 2016-09-10
  */
 
- using namespace std;
-
 /// Necessary Structures
+using namespace std;
+
+const int NEW_SAMPLE = 1;
+const int INT = 2;
+const int NON_INT = 3;
+
 /// FOR MAKING TIME SAMPLING UNIFORM
 const double delta_t = 100;
 
@@ -139,5 +143,104 @@ struct Trajectory
     void displayTrajectory(){
         printf("Trajectory:\ntrajectory_id = %d\n", trajectory_id);
         for(int i=0; i<path.size(); i++) path[i].displayLine();
+    }
+};
+
+struct MovingObject
+{
+    int object_id, int_num;
+    double weight, cur_x, cur_y;
+    bool inSolution;
+
+    vector<Trajectory> trajectories;
+
+    MovingObject(int oid, double weight=1, bool inSolution=false, int int_num=0, double x1=0.0, double y1=0.0){
+        this->object_id = oid;
+        this->weight = weight;
+        this->inSolution = inSolution;
+        this->int_num - int_num;
+
+        cur_x = x1;
+        cur_y = y1;
+    }
+
+    bool checkTrajectoryId(int trajectory_id){
+        for(int i=0; i<trajectories.size(); i++){
+            if(trajectories[i].trajectory_id == trajectory_id) return true;
+        }
+        return false;
+    }
+
+    void addTrajectoryToMovingObject(int trajectory_id){
+        trajectories.push_back(Trajectory(object_id, trajectory_id));
+    }
+
+    void addPointsToTrajectory(int trajectory_id, double x, double y, double t, double speed=20){
+        bool check = false;
+        for(int i=0; i<trajectories.size(); i++){
+            if(trajectories[i].trajectory_id == trajectory_id){
+                trajectories[i].addLineToTrajectory(x,y,t,speed);
+                check = true;
+            }
+        }
+        if(!check){
+            Trajectory trajectory(object_id, trajectory_id);
+            trajectory.addLineToTrajectory(x,y,t,speed);
+            trajectories.push_back(trajectory);
+        }
+    }
+
+    void displayMovingObject(){
+        puts("<MovingObject>");
+        printf("MovingObject ID: %d\n", object_id);
+        printf("MovingObject Weight: %f\n", weight);
+        printf("MovingObject inSolution: %d\n", inSolution);
+        printf("MovingObject int_num: %d\n", int_num);
+        printf("MovingObject current position: %f %f\n", cur_x, cur_y);
+        for(int i=0; i<trajectories.size(); i++) trajectories[i].displayTrajectory();
+        puts("</MovingObject>");
+    }
+};
+
+
+struct DataPoint
+{
+    int participant_id, trip_id;
+    double latitude, longitude, time, act_speed;
+
+    DataPoint(int participant_id, int trip_id, double latitude, double longitude, double time, double act_speed){
+        this->participant_id = participant_id;
+        this-> trip_id = trip_id;
+        this->latitude = latitude;
+        this->longitude = longitude;
+        this->time = time;
+        this->act_speed = act_speed;
+    }
+};
+
+struct Event
+{
+    int event_id, event_type, oid1, oid2;
+    double event_time;
+
+    Event(int event_id, int event_type, int oid1, int oid2, double event_time){
+        this->event_id = event_id;
+        this->event_type = event_type;
+        this->oid1 = oid1;
+        this->oid2 = oid2;
+        this->event_time = event_time;
+    }
+};
+
+struct CoMaxRes
+{
+    double t1, t2, countmax;
+    vector<Object> lobj;
+
+    CoMaxRes(double t1, double t2, vector<Object>& lobj, double countmax){
+        this->t1 = t1;
+        this->t2 = t2;
+        this->lobj = lobj;
+        this->countmax = countmax;
     }
 };
