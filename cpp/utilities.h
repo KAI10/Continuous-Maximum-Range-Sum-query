@@ -4,7 +4,7 @@
  * necessary functions
  *
  * Created by: Ashik <ashik@KAI10>
- * Created on: 2016-09-10
+ * Created on: 2016-10-08
  */
 
  using namespace std;
@@ -120,6 +120,10 @@ int addINIEventsToKDS(int oid1, int oid2, int total_events, double event_time, i
     addToKDS(e);
     total_events++;
     return total_events;
+}
+
+bool isWithin(double x, double y, Rectangle rect){
+    return (x >= rect.x1 && x <= rect.x2) && (y >= rect.y1 && y <= rect.y2);
 }
 
 bool isIntersecting(Rectangle *r1, Rectangle *r2){

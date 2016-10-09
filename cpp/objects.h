@@ -2,7 +2,7 @@
  * objects.h
  *
  * Created by: Ashik <ashik@KAI10>
- * Created on: 2016-09-10
+ * Created on: 2016-10-08
  */
 
 /// Necessary Structures
@@ -17,43 +17,15 @@ const double delta_t = 100;
 
 #include <cmath>
 #include <vector>
+//#include "Area.h"
+//#include "Object.h"
+//#include "Rectangle.h"
 
 double dist(double x1, double y1, double x2, double y2)
 {
     double dx = x1-x2, dy = y1-y2;
     return sqrt(dx*dx + dy*dy);
 }
-
-struct Area
-{
-    double height, width;
-    Area(double height, double width){
-        this-> height = height;
-        this->width = width;
-    }
-};
-
-struct Rectangle
-{
-    double x1, y1, x2, y2, weight;
-    Rectangle(double x1, double y1, double x2, double y2, double weight=1.0){
-        this->x1 = x1;
-        this->x2 = x2;
-        this->y1 = y1;
-        this->y2 = y2;
-        this->weight = weight;
-    }
-};
-
-struct Object
-{
-    double x,y,weight;
-    Object(double x, double y, double weight){
-        this->x = x;
-        this->y = y;
-        this->weight = weight;
-    }
-};
 
 struct Line
 {
@@ -235,9 +207,9 @@ struct Event
 struct CoMaxRes
 {
     double t1, t2, countmax;
-    vector<Object> lobj;
+    vector<int> lobj;
 
-    CoMaxRes(double t1, double t2, vector<Object>& lobj, double countmax){
+    CoMaxRes(double t1, double t2, vector<int>& lobj, double countmax){
         this->t1 = t1;
         this->t2 = t2;
         this->lobj = lobj;

@@ -3,10 +3,11 @@
  * main program
  *
  * Created by: Ashik <ashik@KAI10>
- * Created on: 2016-09-10
+ * Created on: 2016-10-08
  */
 
 #include <bits/stdc++.h>
+#include "maxrs.cpp"
 #include "objects.h"
 using namespace std;
 
@@ -151,7 +152,7 @@ int main()
         Area area(y_max - y_min + r_h, x_max - x_min + r_w);
 
         /// considering all samples are taken at same time, so one line change event for all current lines
-        //total_events = addLineEventsToKDS(total_events, current_time, current_lines[0].time_final);
+        total_events = addLineEventsToKDS(total_events, current_time, current_lines[0].time_final);
 
         /// Create the current rectangles
         /// setup current coordinates for objects
@@ -179,8 +180,6 @@ int main()
                 /// if that time is less than t_final of both l1 and l2, insert in kds
                 /// do other necessary processing for intersecting
 
-                //cout << "isIntersecting: " << l1.rect->x1 << ' ' << l1.rect->y1 << endl;
-
                 if(isIntersecting(l1.rect, l2.rect)){
                     /// do something
 
@@ -197,7 +196,6 @@ int main()
                     t2 += 0.001;
                     if(hasint && t2 >= current_time && t2 < min(l1.time_final,l2.time_final)){
                         // create non-intersecting event
-
                         total_events = addINIEventsToKDS(l1.grand_id, l2.grand_id, total_events, t2, NON_INT);
                     }
                 }
@@ -212,7 +210,6 @@ int main()
                         computeEventTime(l1, l2, l1.x_initial, l1.y_initial, l2.x_initial, l2.y_initial, d_w, d_h, current_time, hasint, t1, t2);
                         if(hasint && t1 > current_time && t1 < min(l1.time_final,l2.time_final)){
                             // create intersecting event
-                            //cout << l1.grand_id << ' ' << l2.grand_id << endl;
                             total_events = addINIEventsToKDS(l1.grand_id, l2.grand_id, total_events, t1, INT);
                         }
                     }
@@ -220,7 +217,46 @@ int main()
             }
         }
         cout << total_events << endl;
-        ///implement maxrs
+
+        /// perform the initial maxrs
+        vector<Object> objects;
+        for(int i=0; i<current_lines.size(); i++){
+            Line l = current_lines[i];
+            int index = dict1[l.grand_id];
+            MovingObject mo = saved[index];
+            Object temp(mo.cur_x, mo.cur_y, mo.weight);
+            objects.push_back(temp);
+        }
+
+        Window *opt_window = process_maxrs(area, coverage, objects);
+
+        /// Find the objects within MaxRS solution
+        double x_co = (opt_window->l + opt_window->r) / 2.0, y_co = opt_window->h;
+        Rectangle rect(max(0.0, x_co - d_w), max(0.0, y_co - d_h), min(area.width, x_co + d_w), min(area.height, y_co + d_h));
+
+        vector<int> lobj;
+        CoMaxRes current_maxrs(current_time, 100000, lobj, opt_window->score);
+
+        for(int i=0; i<current_lines.size(); i++){
+            Line l = current_lines[i];
+            int index = dict1[l.grand_id];
+            MovingObject mo = saved[index];
+
+            if(isWithin(mo.cur_x, mo.cur_y, rect)){
+                saved[index].inSolution = true;
+                current_maxrs.lobj.push_back(l.grand_id);
+            }
+        }
+
+        cout << "inSolution objects:\n";
+        for(int i=0; i<current_maxrs.lobj.size(); i++){
+            cout << current_maxrs.lobj[i] << endl;
+        }
+
+        printf("Preliminary Result:\n Time range: %f %f\n length: %d\nscore: %f\n", current_maxrs.t1, current_maxrs.t2,
+                (int)current_maxrs.lobj.size(), current_maxrs.countmax);
+
+
     }
 
     return 0;
