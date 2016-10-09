@@ -118,7 +118,7 @@ struct Trajectory
 
             /// MAKING TIME SAMPLING UNIFORM
             /// (x1,y1,t1) is the new time sample
-            /// t1 = self.t_last + delta_t  # UNCOMMENT THIS LINE
+            t1 = t_last + delta_t;  /// UNCOMMENT THIS LINE
 
             double distance = dist(x_last, y_last, x1, y1)/1000/1.6093; /// dist measured in mile
             double td = t1 - t_last;

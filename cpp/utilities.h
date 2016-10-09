@@ -115,6 +115,194 @@ int addLineEventsToKDS(int total_events, double current_time, double event_time)
     return total_events;
 }
 
+int addINIEventsToKDS(int oid1, int oid2, int total_events, double event_time, int event_type){
+    Event e(total_events, event_type, oid1, oid2, event_time);
+    addToKDS(e);
+    total_events++;
+    return total_events;
+}
+
+bool isIntersecting(Rectangle *r1, Rectangle *r2){
+    //cout << r1->x1 <<' ' << r1->y1 << ' ' << r1->x2 << ' ' << r1->y2 << endl;
+    //cout << r2->x1 <<' ' << r2->y1 << ' ' << r2->x2 << ' ' << r2->y2 << "\n\n";
+    bool x_int = false, y_int = false;
+    if((r1->x1 >= r2->x1 && r1->x1 <= r2->x2) || (r1->x2 >= r2->x1 && r1->x2 <= r2->x2) || (r2->x1 >= r1->x1 && r2->x1 <= r1->x2)) x_int = true;
+    if((r1->y1 >= r2->y1 && r1->y1 <= r2->y2) || (r1->y2 >= r2->y1 && r1->y2 <= r2->y2) || (r2->y1 >= r1->y1 && r2->y1 <= r1->y2)) y_int = true;
+
+    return (x_int && y_int);
+}
+
+///hasOverlap
+bool hasOverlap(Line l1, Line l2, double d_w, double d_h){
+    double xmax_1 = max(l1.x_initial + d_w, l1.x_final + d_w),
+    xmin_1 = min(l1.x_initial - d_w, l1.x_final - d_w),
+    ymax_1 = max(l1.y_initial + d_h, l1.y_final + d_h),
+    ymin_1 = min(l1.y_initial - d_h, l1.y_final - d_h),
+
+    xmax_2 = max(l2.x_initial + d_w, l2.x_final + d_w),
+    xmin_2 = min(l2.x_initial - d_w, l2.x_final - d_w),
+    ymax_2 = max(l2.y_initial + d_h, l2.y_final + d_h),
+    ymin_2 = min(l2.y_initial - d_h, l2.y_final - d_h);
+
+    if (xmax_1 < xmin_2 || xmax_2 < xmin_1) return false;
+    if (ymax_1 < ymin_2 || ymax_2 < ymin_1) return false;
+    return true;
+}
+
+///computeEventTime
+void computeEventTime(Line l1, Line l2, double p1x, double p1y, double p2x, double p2y, double d_w, double d_h, double current_time,
+                        bool &hasint, double &t1, double &t2){
+    double v1x = (l1.x_final - l1.x_initial) / (l1.time_final - l1.time_initial),
+    v1y = (l1.y_final - l1.y_initial) / (l1.time_final - l1.time_initial),
+    v2x = (l2.x_final - l2.x_initial) / (l2.time_final - l2.time_initial),
+    v2y = (l2.y_final - l2.y_initial) / (l2.time_final - l2.time_initial),
+
+    minvalid = max(l2.time_initial, l1.time_initial),
+    maxvalid = min(l2.time_final, l1.time_final),
+
+    tminx = 100000.00,
+    tmaxx = -100000.00,
+    tmina = 100000.00,
+    tminb = 100000.00,
+    tmaxa = -100000.00,
+    tmaxb = -100000.00,
+
+    tminy = 100000.00,
+    tmaxy = -100000.00,
+    tminf = 100000.00,
+    tmine = 100000.00,
+    tmaxf = -100000.00,
+    tmaxe = -100000.00;
+
+    if (v1x == v2x && v1y == v2y){
+        if (isIntersecting(new Rectangle(p1x - d_w, p1y - d_h, p1x + d_w, p1y + d_h), new Rectangle(p2x - d_w, p2y - d_h, p2x + d_w, p2y + d_h))){
+            //return True, minvalid, maxvalid
+            hasint = true;
+            t1 = minvalid;
+            t2 = maxvalid;
+            return;
+        }
+        else{
+            //return False, -1, -1
+            hasint = false;
+            t1 = -1;
+            t2 = -1;
+            return;
+        }
+    }
+
+    if (v1x == v2x){
+        if (abs(p1x - p2x) > (2 * d_w)){
+            //return False, -1, -1
+            hasint = false;
+            t1 = -1;
+            t2 = -1;
+            return;
+        }
+
+        tmaxx = 1000000;
+        tminx = -1000000;
+    }
+    else{
+        if (v1x - v2x > 0){
+            tmina = (p2x - p1x) / (v1x - v2x);
+            tmaxa = (p2x - p1x + (2 * d_w)) / (v1x - v2x);
+            tminb = (p2x - p1x - (2 * d_w)) / (v1x - v2x);
+            tmaxb = (p2x - p1x) / (v1x - v2x);
+        }
+        else{
+            tmina = (p2x - p1x + (2 * d_w)) / (v1x - v2x);
+            tmaxa = (p2x - p1x) / (v1x - v2x);
+            tminb = (p2x - p1x) / (v1x - v2x);
+            tmaxb = (p2x - p1x - (2 * d_w)) / (v1x - v2x);
+        }
+
+        tmaxx = max(tmina, max(tmaxa, max(tminb, tmaxb)));
+        tminx = min(tmina, min(tmaxa, min(tminb, tmaxb)));
+    }
+
+    if (v1y == v2y){
+        if (abs(p1y - p2y) > (2 * d_h)){
+            //return False, -1, -1
+            hasint = false;
+            t1 = -1;
+            t2 = -1;
+            return;
+        }
+
+        tmaxy = 1000000;
+        tminy = -1000000;
+    }
+    else{
+        if (v1y - v2y > 0){
+            tminf = (p2y - p1y) / (v1y - v2y);
+            tmaxf = (p2y - p1y + (2 * d_h)) / (v1y - v2y);
+            tmine = (p2y - p1y - (2 * d_h)) / (v1y - v2y);
+            tmaxe = (p2y - p1y) / (v1y - v2y);
+        }
+        else{
+            tminf = (p2y - p1y + (2 * d_h)) / (v1y - v2y);
+            tmaxf = (p2y - p1y) / (v1y - v2y);
+            tmine = (p2y - p1y) / (v1y - v2y);
+            tmaxe = (p2y - p1y - (2 * d_h)) / (v1y - v2y);
+        }
+        tmaxy = max(tminf, max(tmaxf, max(tmine, tmaxe)));
+        tminy = min(tminf, min(tmaxf, min(tmine, tmaxe)));
+    }
+
+    // print tmaxx,",", tminx,",", tmaxy,",", tminy
+    if (tmaxx < tminy || tmaxy < tminx){
+        //return False, -1, -1
+        hasint = false;
+        t1 = -1;
+        t2 = -1;
+        return;
+    }
+
+    double finalt1 = 100000.00, finalt2 = -100000.00;
+
+    if (tminx >= tminy && tmaxx <= tmaxy){
+        finalt1 = tminx;
+        finalt2 = tmaxx;
+    }
+    else if(tminx <= tminy && tmaxx >= tmaxy){
+        finalt1 = tminy;
+        finalt2 = tmaxy;
+    }
+    else if(tminx <= tminy && tmaxx <= tmaxy){
+        finalt1 = tminy;
+        finalt2 = tmaxx;
+    }
+    else if(tminx >= tminy && tmaxx >= tmaxy){
+        finalt1 = tminx;
+        finalt2 = tmaxy;
+    }
+
+    finalt1 += current_time;
+    finalt2 += current_time;
+
+    if(finalt2 <= minvalid){
+        //return False, -1, -1
+        hasint = false;
+        t1 = -1;
+        t2 = -1;
+        return;
+    }
+    else if(finalt1 >= maxvalid){
+        //return False, -1, -1
+        hasint = false;
+        t1 = -1;
+        t2 = -1;
+        return;
+    }
+
+    if(finalt1 <= minvalid) finalt1 = minvalid;
+    if(finalt2 >= maxvalid) finalt2 = maxvalid;
+
+    hasint = true;
+    t1 = finalt1;
+    t2 = finalt2;
+}
 
 
 
