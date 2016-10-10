@@ -20,6 +20,10 @@ map<int, int>:: iterator itm;
 
 int numberOfObjects;
 
+///needed for tprtree reading
+int sampleNumber;
+string diskFileName;
+
 /// can't be solved using just priority queue
 /// idea: use the priority queue to save index in a vector
 /// that index contains events at earlies time
@@ -28,11 +32,21 @@ map<double, int> index_in_kds_data;
 vector<vector<Event> > kds_data;
 priority_queue<double, vector<double>, greater<double> > kds;
 
+#include "tree_utilities.h"
+
+///Indexpointer for tprtree
+///idx will be used in every NEW_SAMPLE_EVENT
+Index* idx;
+
+#include "tree_query.h"
+
 #include "utilities.h"
 #include "event_handlers.h"
 
 int main()
 {
+    const clock_t begin_time = clock();
+
     vector<DataPoint> datapoints;
     numberOfObjects = readFromMNGT(1, datapoints);
     ///cout << numberOfObjects << endl;
@@ -174,12 +188,51 @@ int main()
             saved[index].cur_y = l.y_initial;
         }
 
+        ///setup tprtree index
+        sampleNumber = 0;
+        diskFileName = "tprtree" + to_string(sampleNumber);
+        //idx = getIndexFromDisk(diskFileName.c_str(), numberOfObjects);
+
+
         /// add the initial intersecting/non-intersecting events
         /// also set initial variable values
+/*
+        bool done[numberOfObjects];
+        memset(done, false, sizeof(done));
+*/
         for(int i=0; i<current_lines.size(); i++){
             Line l1 = current_lines[i];
             int index1 = dict1[l1.grand_id];
+/*
+            done[l1.grand_id] = true;
+
+
+            vector<int> intersects;
+            query(intersects, l1.x_initial+x_min-d_w, l1.y_initial+y_min-d_h, l1.time_initial,
+                            l1.x_final+x_min-d_w, l1.y_final+y_min-d_h, l1.time_final, l1.speed);
+*/
+            /*
+            cout << "QUERY RESULT of " << l1.grand_id << ": ";
+            for(int i=0; i<intersects.size(); i++){
+                cout << intersects[i] << endl;
+            }
+            */
+
+
             for(int j=i+1; j<current_lines.size(); j++){
+/*
+            for(int j=0; j<intersects.size(); j++){
+                int object_id = intersects[j];
+                //if(l1.grand_id == 17) cout << "pre: " << object_id << endl;
+                if(done[object_id]) continue;
+                //if(l1.grand_id == 17) cout << "after filter: " << object_id << endl;
+
+                //if(l1.grand_id == 17) cout << "object od: " << object_id << endl;
+                int line_index = object_line_map[object_id];
+                //if(l1.grand_id == 17) cout << "line index: " << line_index << endl;
+
+                Line l2 = current_lines[line_index];
+                /**/
                 Line l2 = current_lines[j];
                 int index2 = dict1[l2.grand_id];
 
@@ -204,6 +257,8 @@ int main()
                     t2 += SAFETY;
                     if(hasint && t2 >= current_time && t2 < min(l1.time_final,l2.time_final)){
                         // create non-intersecting event
+                        cout << l1.grand_id << ' ' << l2.grand_id << endl;
+                        //if(l1.grand_id == 17) cout << "line index: " << object_line_map[l2.grand_id] << endl;
                         total_events = addINIEventsToKDS(l1.grand_id, l2.grand_id, total_events, t2, NON_INT);
                     }
                 }
@@ -218,13 +273,16 @@ int main()
                         computeEventTime(l1, l2, l1.x_initial, l1.y_initial, l2.x_initial, l2.y_initial, d_w, d_h, current_time, hasint, t1, t2);
                         if(hasint && t1 > current_time && t1 < min(l1.time_final,l2.time_final)){
                             // create intersecting event
+                            cout << l1.grand_id << ' ' << l2.grand_id << endl;
+                            //if(l1.grand_id == 17) cout << "line index: " << object_line_map[l2.grand_id] << endl;
                             total_events = addINIEventsToKDS(l1.grand_id, l2.grand_id, total_events, t1, INT);
                         }
                     }
                 }
             }
         }
-        cout << total_events << endl;
+        cout << "After preli O(n^2), total_events: " << total_events << endl;
+
 
         /// perform the initial maxrs
         vector<Object> objects;
@@ -263,12 +321,11 @@ int main()
             }
         }
 
-        /*
-        cout << "inSolution objects:\n";
-        for(int i=0; i<current_maxrs.lobj.size(); i++){
-            cout << current_maxrs.lobj[i] << endl;
-        }
-        */
+        //cout << "inSolution objects:\n";
+        //for(int i=0; i<current_maxrs.lobj.size(); i++){
+          //  cout << current_maxrs.lobj[i] << endl;
+        //}
+
         cout << "Time range: " << current_maxrs.t1 << " to " << current_maxrs.t2 << "\n";
         cout << "[ " << current_maxrs.lobj[0];
         for(int j=1; j<current_maxrs.lobj.size(); j++) cout << ", " << current_maxrs.lobj[j];
@@ -366,6 +423,8 @@ int main()
         }
 
     }
+
+    cout << "elapsed time: " << double( clock () - begin_time ) /  CLOCKS_PER_SEC << " seconds\n";
 
     return 0;
 }

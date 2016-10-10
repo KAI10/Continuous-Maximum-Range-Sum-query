@@ -1,6 +1,6 @@
 /*
- * buildTPRTree.cpp
- * command: ./buildTPRTree.out serial < input_data
+ * buildAllTPRTrees.cpp
+ * command: ./buildAllTPRTrees.out < input_data
  *
  * Created by: Ashik <ashik@KAI10>
  * Created on: 2016-09-10
@@ -15,15 +15,13 @@ using namespace std;
 using namespace SpatialIndex;
 
 typedef long long ll;
-const double HORIZON = 1e10;
+//const double HORIZON = 1e10;
 
 #define mem(list, val) memset(list, (val), sizeof(list))
 #define pb push_back
 #define tol 1e-12
-#define d1 1000
-#define d2 1000
 
-#include "utilities.h"
+#include "tree_utilities.h"
 
 map<ll, ll> real_id_to_object_id;
 map<ll, ll>::iterator it;
@@ -60,8 +58,8 @@ void readDataset()
         {
             int pos = (*it).second;
             double offset = objects[pos].time_offset;
-            //int count = objects[pos].inst.size();
-            objects[pos].inst.push_back(sample(lat, lon, time-offset, 20));
+            int count = objects[pos].inst.size();
+            objects[pos].inst.push_back(sample(lat, lon, count*100, 20));
         }
     }
 }
@@ -87,7 +85,7 @@ void showDataset(int ind)
     }
 }
 
-Index* createIndex(char *diskFileName, unsigned long capacity)
+Index* createIndex(const char *diskFileName, unsigned long capacity)
 {
     // create a property set with default values.
     // see utility.cc for all defaults  http://libspatialindex.github.io/doxygen/Utility_8cc_source.html#l00031
@@ -143,10 +141,11 @@ Index* createIndex(char *diskFileName, unsigned long capacity)
 
 int buildTree(Index* idx, int take)
 {
-    int inserted = 0, count = 0;
+    int inserted = 0;
     bool ok;
     for(int i=0; i<objects.size(); i++)
     {
+        //cout << objects[i].inst.size() << endl;
         if(objects[i].inst.size() <= take+1) continue; ///this object doesn't have 'take' NO. of line segments
 
         ok = insertMovingRegion(idx, objects[i].inst[take], objects[i].inst[take+1], objects[i].id);
@@ -163,121 +162,66 @@ int buildTree(Index* idx, int take)
             idx->flush();
         }
     }
+
     return inserted;
 }
 
-///one argument will be received, 'n', meaning, build tprtree with n'th line segment of every object
 
 int main(int argc, char** argv)
 {
-    cout.precision(10);
-    if(argc < 2)
-    {
-        puts("command: ./buildTPRTree.out serial < input_data");
-        return 1;
-    }
+    const clock_t begin_time = clock();
 
+    cout.precision(10);
     readDataset();
+
+    //cout << objects[0].inst[30].lat << ' ' << objects[0].inst[30].lon << ' ' << objects[0].inst[30].time << endl;
+    //cout << objects[0].inst[31].lat << ' ' << objects[0].inst[31].lon << ' ' << objects[0].inst[31].time << endl;
+    //showDataset(69);
 
     unsigned long capacity = objects.size();
 
-    char diskFileName[] = "tprtree";
-    string fileName = string(diskFileName);
-
-    //initalise Indexpointer
-    Index* idx = 0;
-    try
+    for(int i=0;; i++)
     {
-        idx = createIndex(diskFileName, capacity);
+        string diskFileName = "tprtree" + to_string(i);
+
+        //initalise Indexpointer
+        Index* idx=0;
+        try
+        {
+            idx = createIndex(diskFileName.c_str(), capacity);
+            idx->flush();
+        }
+        catch(...)
+        {
+            //cout << "exception during index creation"
+            return 1;
+        }
+
+        /*
+        Tools::PropertySet properties = idx->GetProperties();
+        Tools::Variant vari = properties.getProperty("IndexIdentifier");
+        cout << diskFileName << " ID: " << vari.m_val.llVal << endl;
+        */
+
+        int totalObjects;
+        totalObjects = buildTree(idx, i);
+        //cout << "objects = " << totalObjects << endl;
+
+        //cout << "building complete\n";
+
+        if(totalObjects == 0) break;
+
+        idx->buffer().flush();
         idx->flush();
     }
-    catch(...)
-    {
-        //cout << "exception during index creation"
-        return 1;
-    }
 
-    /*
-    Tools::PropertySet properties = idx->GetProperties();
-    Tools::Variant vari = properties.getProperty("IndexIdentifier");
-    cout << "ID: " << vari.m_val.llVal << endl;
-    */
-
-    //showDataset(atoi(argv[1]));
-
-    int take = atoi(argv[1]), totalObjects;
-    totalObjects = buildTree(idx, take);
-
-    //cout << totalObjects << endl;
-
-    //cout << "building complete\n";
-
-    /*
-    sample sam1(475245.596659, 4974049.111000, 0,20), sam2(475265.487272, 4974110.687660, 1000,20);
-    obj o2;
-
-    o2.id=243;
-
-    o2.inst.pb(sam1);
-    o2.inst.pb(sam2);
-
-    PT low, high, velo;
-    take=0;
-
-    low = getBottomLeftPoint(PT(o2.inst[take].lat, o2.inst[take].lon));
-    high = getUpperRightPoint(PT(o2.inst[take].lat, o2.inst[take].lon));
-    velo = getVelocity(o2.inst[take], o2.inst[take+1]);
-
-    double low_coords[2], high_coords[2], low_v[2];
-    low_coords[0] = low.lat;
-    low_coords[1] = low.lon;
-    high_coords[0] = high.lat;
-    high_coords[1] = high.lon;
-    low_v[0] = velo.lat;
-    low_v[1] = velo.lon;
-
-
-    SpatialIndex::IShape* shape=0;
-    ObjVisitor* visitor = new ObjVisitor;
-
-    shape = new SpatialIndex::MovingRegion(low_coords, high_coords, low_v, low_v,  o2.inst[take].time, o2.inst[take+1].time, 2);
-    //addMovingRegion(idx, disk, low_coords, high_coords, low_v, o1.inst[take].time, o1.inst[take+1].time, o1.id);
-    //insertMovingRegion(idx, disk, o2.inst[take], o2.inst[take+1], o2.id);
-    idx->index().intersectsWithQuery(*shape, *visitor);
-
-    cout << "intersects with: " << visitor->GetResultCount() << " objects\n";
-
-    int64_t nResultCount;
-    nResultCount = visitor->GetResultCount();
-
-    // get actual results
-    std::vector<SpatialIndex::IData*>& results = visitor->GetResults();
-    // an empty vector that wewill copt the results to
-    vector<SpatialIndex::IData*>* resultsCopy = new vector<SpatialIndex::IData*>();
-
-    // copy the Items into the newly allocated vector array
-    // we need to make sure to clone the actual Item instead
-    // of just the pointers, as the visitor will nuke them
-    // upon destroy
-    for (int64_t i = 0; i < nResultCount; ++i){
-        resultsCopy->push_back(dynamic_cast<SpatialIndex::IData*>(results[i]->clone()));
-    }
-
-    //cout << "Inersects with: ";
-    for (int64_t i = 0; i < nResultCount; ++i){
-        SpatialIndex::IData* data=0;
-        data = (*resultsCopy)[i];
-        if(i>0) cout << ' ';
-        cout << data->getIdentifier();
-        cout << endl;
-    }
-    */
-
-
-    idx->buffer().flush();
-    idx->flush();
+    cout << "elapsed time: " << double( clock () - begin_time ) /  CLOCKS_PER_SEC << " seconds\n";
 
     return 0;
 }
+
+
+
+
 
 

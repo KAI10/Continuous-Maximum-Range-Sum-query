@@ -6,7 +6,6 @@
  */
 
 #include "maxrs_utilities.h"
-#define tol 1e-4
 
 Window* process_maxrs(Area area, Area coverage, vector<Object> &objects)
 {

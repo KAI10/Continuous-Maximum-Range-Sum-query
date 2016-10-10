@@ -15,8 +15,8 @@
  #include <map>
 
 const int STEP = 1;
-const double r_w = 1000;
-const double r_h = 1000;
+const double r_w = d1;
+const double r_h = d2;
 const double a_w = 100;
 const double a_h = 100;
 
@@ -36,7 +36,7 @@ map<int, int>:: iterator it;
 
 int readFromMNGT(int num, vector<DataPoint>& datapoints)
 {
-    string baseFileName = "simpleBikeData.txt";
+    string baseFileName = "3984.txt";
 
     int nextID = 0;
     FILE *fp;

@@ -1,3 +1,0 @@
-g++ -std=c++0x buildTPRTree.cpp -lspatialindex_c -lspatialindex -o buildTPRTree.out
-g++ -std=c++0x buildAllTPRTrees.cpp -lspatialindex_c -lspatialindex -o buildAllTPRTrees.out
-g++ -std=c++0x query.cpp -lspatialindex_c -lspatialindex -o query.out
