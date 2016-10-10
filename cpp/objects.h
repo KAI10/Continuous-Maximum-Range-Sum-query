@@ -209,7 +209,15 @@ struct CoMaxRes
     double t1, t2, countmax;
     vector<int> lobj;
 
-    CoMaxRes(double t1, double t2, vector<int>& lobj, double countmax){
+    CoMaxRes(){}
+    CoMaxRes(double t1, double t2, vector<int> lobj, double countmax){
+        this->t1 = t1;
+        this->t2 = t2;
+        this->lobj = lobj;
+        this->countmax = countmax;
+    }
+
+    void Set(double t1, double t2, vector<int> lobj, double countmax){
         this->t1 = t1;
         this->t2 = t2;
         this->lobj = lobj;

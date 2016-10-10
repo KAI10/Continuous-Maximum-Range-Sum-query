@@ -26,9 +26,10 @@ int numberOfObjects;
 /// use the set to see if an event time exists currently
 map<double, int> index_in_kds_data;
 vector<vector<Event> > kds_data;
-priority_queue<double> kds;
+priority_queue<double, vector<double>, greater<double> > kds;
 
 #include "utilities.h"
+#include "event_handlers.h"
 
 int main()
 {
@@ -69,7 +70,7 @@ int main()
 
     for(int iteration=0; iteration<1; iteration++){
         printf("iteration = %d\n", iteration);
-        int total_events = 0;
+        long long total_events = 0;
         double current_time = 0;
         double next_event = DINF; ///means next event time
         double next_query = DINF;
@@ -89,7 +90,7 @@ int main()
             if(iteration < saved[i].trajectories.size()){
                 current_trajectories.push_back(saved[i].trajectories[iteration]);
                 current_lines.push_back(saved[i].trajectories[iteration].path[0]);
-                object_line_map[saved[i].object_id] = current_lines.size()-1;
+                object_line_map[saved[i].object_id] = (int)current_lines.size()-1;
                 current_objects.push_back(saved[i].object_id);
             }
         }
@@ -107,7 +108,7 @@ int main()
 
         /// Setup the total area and coverage
         /// Find the extreme values, and set accordingly
-        double x_max = 0, x_min = DINF, y_max = 0, y_min = DINF,
+        x_max = 0, x_min = DINF, y_max = 0, y_min = DINF,
         d_w = coverage.width/2.0, /// r_w/2
         d_h = coverage.height/2.0; /// r_h/2
 
@@ -132,6 +133,7 @@ int main()
             //Trajectory trj = current_trajectories[i];
             for(int j=0; j<current_trajectories[i].path.size(); j++){
                 //Line l = trj.path[j];
+
                 current_trajectories[i].path[j].x_initial += d_w - x_min;
                 current_trajectories[i].path[j].y_initial += d_h - y_min;
                 current_trajectories[i].path[j].x_final += d_w - x_min;
@@ -149,7 +151,13 @@ int main()
 
         printf("x_max = %f\nx_min = %f\ny_max = %f\ny_min = %f\n", x_max, x_min, y_max, y_min);
 
-        Area area(y_max - y_min + r_h, x_max - x_min + r_w);
+        area.height = y_max - y_min + r_h,
+        area.width = x_max - x_min + r_w;
+
+        restrict_precision(area.height);
+        restrict_precision(area.width);
+
+        cout << area.height << ' ' << area.width << endl;
 
         /// considering all samples are taken at same time, so one line change event for all current lines
         total_events = addLineEventsToKDS(total_events, current_time, current_lines[0].time_final);
@@ -193,7 +201,7 @@ int main()
                     bool hasint;
                     double t1, t2;
                     computeEventTime(l1, l2, l1.x_initial, l1.y_initial, l2.x_initial, l2.y_initial, d_w, d_h, current_time, hasint, t1, t2);
-                    t2 += 0.001;
+                    t2 += SAFETY;
                     if(hasint && t2 >= current_time && t2 < min(l1.time_final,l2.time_final)){
                         // create non-intersecting event
                         total_events = addINIEventsToKDS(l1.grand_id, l2.grand_id, total_events, t2, NON_INT);
@@ -228,6 +236,10 @@ int main()
             objects.push_back(temp);
         }
 
+        //for(int i=0; i<objects.size(); i++){
+          //  cout << objects[i].x << ' ' << objects[i].y << " 1 " << objects[i].weight << endl;
+        //}
+
         Window *opt_window = process_maxrs(area, coverage, objects);
 
         /// Find the objects within MaxRS solution
@@ -242,20 +254,116 @@ int main()
             int index = dict1[l.grand_id];
             MovingObject mo = saved[index];
 
+            restrict_precision(mo.cur_x);
+            restrict_precision(mo.cur_y);
+
             if(isWithin(mo.cur_x, mo.cur_y, rect)){
                 saved[index].inSolution = true;
                 current_maxrs.lobj.push_back(l.grand_id);
             }
         }
 
+        /*
         cout << "inSolution objects:\n";
         for(int i=0; i<current_maxrs.lobj.size(); i++){
             cout << current_maxrs.lobj[i] << endl;
         }
+        */
+        cout << "Time range: " << current_maxrs.t1 << " to " << current_maxrs.t2 << "\n";
+        cout << "[ " << current_maxrs.lobj[0];
+        for(int j=1; j<current_maxrs.lobj.size(); j++) cout << ", " << current_maxrs.lobj[j];
+        cout << " ]\n";
 
-        printf("Preliminary Result:\n Time range: %f %f\n length: %d\nscore: %f\n", current_maxrs.t1, current_maxrs.t2,
+        printf("Preliminary Result:\nTime range: %f to %f\nlength: %d\nscore: %f\n", current_maxrs.t1, current_maxrs.t2,
                 (int)current_maxrs.lobj.size(), current_maxrs.countmax);
 
+        //cout << kds.size() << endl;
+
+        //int events_processed = 0;
+
+        while(kds.size() > 0){
+            //if(current_lines.size() < 500) break;
+            double next_event_time = kds.top();
+            kds.pop();
+
+            cout << "next_event_time: " << next_event_time << endl;
+
+            current_time = next_event_time;
+
+            int index = index_in_kds_data[next_event_time];
+
+            //cout << "index: " << index << endl;
+
+
+            for(int i=0; i<kds_data[index].size(); i++){
+                Event event = kds_data[index][i];
+
+                bool changed;
+                CoMaxRes nmaxrs;
+
+                if(event.event_type == NEW_SAMPLE){
+                    puts("NEW_SAMPLE Event\n");
+
+                    total_events = handle_NEW_SAMPLE_Event(event, current_objects, current_lines, current_trajectories, object_line_map,
+                                            iteration, total_events, current_time, current_maxrs, nmaxrs, changed);
+                }
+                else if(event.event_type == INT){
+                    printf("DO Event between: %d %d\n", event.oid1, event.oid2);
+
+                    total_events = handle_INT_Event(event, current_lines, object_line_map, total_events, current_time, current_maxrs, nmaxrs, changed);
+                }
+                else{ ///event.event_type == NON_INT
+                    printf("OD Event between: %d %d\n", event.oid1, event.oid2);
+                    total_events = handle_NON_INT_Event(event, current_lines, object_line_map, total_events, current_time, current_maxrs, nmaxrs, changed);
+                }
+
+                if(changed){
+                    //cout << "previous score: " << current_maxrs.countmax << endl;
+
+                    vector<int> tempobj;
+                    for(int j=0; j<current_maxrs.lobj.size(); j++) tempobj.push_back(current_maxrs.lobj[j]);
+                    CoMaxRes tempmaxrs(current_maxrs.t1, current_time, tempobj, current_maxrs.countmax);
+                    comaxrs.push_back(tempmaxrs);
+                    current_maxrs = nmaxrs;
+
+                    //cout << "# of solutions: " << comaxrs.size() << endl;
+
+
+                    cout << "Time range: " << current_maxrs.t1 << " to " << current_maxrs.t2 << "\nscore: " << current_maxrs.countmax
+                        << "\nactual: " << current_maxrs.lobj.size() << "\n";
+                    cout << "[ ";
+                    if(current_maxrs.lobj.size()) cout << current_maxrs.lobj[0];
+                    for(int j=1; j<current_maxrs.lobj.size(); j++) cout << ", " << current_maxrs.lobj[j];
+                    cout << " ]\n\n";
+
+                }
+
+                else{
+                    //cout << "total_events: " << total_events << endl;
+                    //cout << "Solution not changed\n\n";
+                    cout << "\n";
+                }
+
+                //getchar();
+            }
+
+        }
+
+        vector<int> tempobj;
+        for(int j=0; j<current_maxrs.lobj.size(); j++) tempobj.push_back(current_maxrs.lobj[j]);
+        CoMaxRes tempmaxrs(current_maxrs.t1, current_time, tempobj, current_maxrs.countmax);
+        comaxrs.push_back(tempmaxrs);
+
+
+        puts("Final Result:");
+        for(int i=0; i<comaxrs.size(); i++){
+            CoMaxRes res = comaxrs[i];
+            cout << "Time range: " << res.t1 << " to " << res.t2 << "\nscore: " << res.countmax << "\nactual: " << res.lobj.size() << "\n";
+            cout << "[ ";
+            if(res.lobj.size()) cout << res.lobj[0];
+            for(int j=1; j<res.lobj.size(); j++) cout << ", " << res.lobj[j];
+            cout << " ]\n\n";
+        }
 
     }
 

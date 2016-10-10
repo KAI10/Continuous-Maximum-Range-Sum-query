@@ -21,10 +21,15 @@ const double a_w = 100;
 const double a_h = 100;
 
 const double DINF = 100000000.0;
+const double SAFETY = 0.005;
 const int IINF = 100000000;
 
 Area coverage(r_h, r_w);
-///Area area(a_h, a_w);
+Area area(a_h, a_w);
+
+ double x_max, x_min, y_max, y_min,
+        d_w, /// r_w/2
+        d_h; /// r_h/2
 
 map<int, int> real_id_to_object_id;
 map<int, int>:: iterator it;
@@ -105,21 +110,38 @@ void addToKDS(Event event)
     }
 }
 
-int addLineEventsToKDS(int total_events, double current_time, double event_time)
-{
+long long addLineEventsToKDS(long long total_events, double current_time, double event_time){
+    //cout << "inside addLineEventsToKDS\n";
     if(event_time > current_time){
         Event e(total_events, NEW_SAMPLE, -1, -1, event_time);
         addToKDS(e);
+        //cout << "total_events: " << total_events << endl;
         total_events++;
+        //cout << "total_events: " << total_events << "\n\n";
     }
     return total_events;
 }
 
-int addINIEventsToKDS(int oid1, int oid2, int total_events, double event_time, int event_type){
+long long addINIEventsToKDS(int oid1, int oid2, long long total_events, double event_time, int event_type){
     Event e(total_events, event_type, oid1, oid2, event_time);
     addToKDS(e);
+    //cout << "total_events: " << total_events << endl;
     total_events++;
+    //cout << "total_events: " << total_events << "\n\n";
     return total_events;
+}
+
+void setCurrentLoc(Line l, MovingObject &obj, double current_time){    /// current location of object found by linear interpolation
+    if(l.time_initial >= l.time_final){
+        cout << "Degenerate Line: time_initial>=time_final\n";
+        exit(1);
+    }
+
+    double x = (((current_time - l.time_initial) / (l.time_final - l.time_initial)) * (l.x_final - l.x_initial)) + l.x_initial;
+    obj.cur_x = x;
+
+    double y = (((current_time - l.time_initial) / (l.time_final - l.time_initial)) * (l.y_final - l.y_initial)) + l.y_initial;
+    obj.cur_y = y;
 }
 
 bool isWithin(double x, double y, Rectangle rect){
@@ -127,8 +149,6 @@ bool isWithin(double x, double y, Rectangle rect){
 }
 
 bool isIntersecting(Rectangle *r1, Rectangle *r2){
-    //cout << r1->x1 <<' ' << r1->y1 << ' ' << r1->x2 << ' ' << r1->y2 << endl;
-    //cout << r2->x1 <<' ' << r2->y1 << ' ' << r2->x2 << ' ' << r2->y2 << "\n\n";
     bool x_int = false, y_int = false;
     if((r1->x1 >= r2->x1 && r1->x1 <= r2->x2) || (r1->x2 >= r2->x1 && r1->x2 <= r2->x2) || (r2->x1 >= r1->x1 && r2->x1 <= r1->x2)) x_int = true;
     if((r1->y1 >= r2->y1 && r1->y1 <= r2->y2) || (r1->y2 >= r2->y1 && r1->y2 <= r2->y2) || (r2->y1 >= r1->y1 && r2->y1 <= r1->y2)) y_int = true;
@@ -136,7 +156,6 @@ bool isIntersecting(Rectangle *r1, Rectangle *r2){
     return (x_int && y_int);
 }
 
-///hasOverlap
 bool hasOverlap(Line l1, Line l2, double d_w, double d_h){
     double xmax_1 = max(l1.x_initial + d_w, l1.x_final + d_w),
     xmin_1 = min(l1.x_initial - d_w, l1.x_final - d_w),
@@ -153,7 +172,6 @@ bool hasOverlap(Line l1, Line l2, double d_w, double d_h){
     return true;
 }
 
-///computeEventTime
 void computeEventTime(Line l1, Line l2, double p1x, double p1y, double p2x, double p2y, double d_w, double d_h, double current_time,
                         bool &hasint, double &t1, double &t2){
     double v1x = (l1.x_final - l1.x_initial) / (l1.time_final - l1.time_initial),
