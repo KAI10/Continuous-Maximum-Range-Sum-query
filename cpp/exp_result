@@ -24,7 +24,7 @@ query rectangle size: .01 x .01
 
 events at first: 383
 
-index: 41.7601 seconds
+index: 41.6028 seconds
 no index: 83.9987 seconds
 
 ##################################

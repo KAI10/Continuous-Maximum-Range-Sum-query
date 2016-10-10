@@ -191,26 +191,26 @@ int main()
         ///setup tprtree index
         sampleNumber = 0;
         diskFileName = "tprtree" + to_string(sampleNumber);
-        //idx = getIndexFromDisk(diskFileName.c_str(), numberOfObjects);
+        idx = getIndexFromDisk(diskFileName.c_str(), numberOfObjects);
 
 
         /// add the initial intersecting/non-intersecting events
         /// also set initial variable values
-/*
+
         bool done[numberOfObjects];
         memset(done, false, sizeof(done));
-*/
+
         for(int i=0; i<current_lines.size(); i++){
             Line l1 = current_lines[i];
             int index1 = dict1[l1.grand_id];
-/*
+
             done[l1.grand_id] = true;
 
 
             vector<int> intersects;
             query(intersects, l1.x_initial+x_min-d_w, l1.y_initial+y_min-d_h, l1.time_initial,
                             l1.x_final+x_min-d_w, l1.y_final+y_min-d_h, l1.time_final, l1.speed);
-*/
+
             /*
             cout << "QUERY RESULT of " << l1.grand_id << ": ";
             for(int i=0; i<intersects.size(); i++){
@@ -219,8 +219,8 @@ int main()
             */
 
 
-            for(int j=i+1; j<current_lines.size(); j++){
-/*
+//            for(int j=i+1; j<current_lines.size(); j++){
+
             for(int j=0; j<intersects.size(); j++){
                 int object_id = intersects[j];
                 //if(l1.grand_id == 17) cout << "pre: " << object_id << endl;
@@ -233,7 +233,7 @@ int main()
 
                 Line l2 = current_lines[line_index];
                 /**/
-                Line l2 = current_lines[j];
+                //Line l2 = current_lines[j];
                 int index2 = dict1[l2.grand_id];
 
                 /// test if currently intersecting
