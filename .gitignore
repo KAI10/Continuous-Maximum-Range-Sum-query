@@ -10,4 +10,4 @@ log*
 generateResultData*
 39*
 ../tree/
-*.txt
+*.txt*
