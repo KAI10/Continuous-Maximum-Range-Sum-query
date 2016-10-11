@@ -5,15 +5,15 @@
  * Created on: 2016-10-08
  */
 
+///for changing mode (indexed <-> non-indexed)
+///comment out this line for non-indexed mode
+#define INDEX 1
+
 long long handle_NEW_SAMPLE_Event(Event event, vector<int> &current_objects, vector<Line> &current_lines, vector<Trajectory> &current_trajectories,
                                 map<int, int> &object_line_map, int iteration, long long total_events, double current_time,
                                 CoMaxRes &current_maxrs, CoMaxRes &nmaxrs, bool &changed)
 {
     //cout << "total_events: " << total_events << endl;
-    ///setup tprtree index
-    sampleNumber++;
-    diskFileName = "tprtree" + to_string(sampleNumber);
-    idx = getIndexFromDisk(diskFileName.c_str(), numberOfObjects);
 
     vector<int> nCurrent_objects;
     vector<Line> nCurrent_lines;
@@ -116,8 +116,17 @@ long long handle_NEW_SAMPLE_Event(Event event, vector<int> &current_objects, vec
 
     //cout << "rectangles created\n";
 
+    #ifdef INDEX
+
+    ///setup tprtree index
+    sampleNumber++;
+    diskFileName = "tprtree" + to_string(sampleNumber);
+    idx = getIndexFromDisk(diskFileName.c_str(), numberOfObjects);
+
     bool done[numberOfObjects];
     memset(done, false, sizeof(done));
+
+    #endif // INDEX
 
     /// add the new intersecting/non-intersecting events
     /// also set initial variable values
@@ -125,14 +134,12 @@ long long handle_NEW_SAMPLE_Event(Event event, vector<int> &current_objects, vec
         Line l1 = nCurrent_lines[i];
         int index1 = dict1[l1.grand_id];
 
+        #ifdef INDEX
 
         done[l1.grand_id] = true;
-
         vector<int> intersects;
         query(intersects, l1.x_initial+x_min-d_w, l1.y_initial+y_min-d_h, l1.time_initial,
                         l1.x_final+x_min-d_w, l1.y_final+y_min-d_h, l1.time_final, l1.speed);
-
-//        for(int j=i+1; j<nCurrent_lines.size(); j++){
 
         for(int j=0; j<intersects.size(); j++){
             //cout << total_events << endl;
@@ -141,8 +148,14 @@ long long handle_NEW_SAMPLE_Event(Event event, vector<int> &current_objects, vec
 
             int line_index = nObject_line_map[object_id];
             Line l2 = nCurrent_lines[line_index];
-            /**/
-            //Line l2 = nCurrent_lines[j];
+
+        #else
+
+        for(int j=i+1; j<nCurrent_lines.size(); j++){
+            Line l2 = nCurrent_lines[j];
+
+        #endif
+
             int index2 = dict1[l2.grand_id];
 
             /// test if currently intersecting

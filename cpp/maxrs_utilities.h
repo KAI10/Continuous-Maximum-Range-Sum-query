@@ -37,6 +37,7 @@ void restrict_precision(vector<Object> &objects)
 
   Author: Chunxiao Diao
   Rewritten in Java: Panitan Wongse-ammat
+  Rewritten in C++: Kazi Ashik Islam
 */
 
 //public class Meit
@@ -230,9 +231,7 @@ IntervalTree* incToNodeV(double l, double r, double h, double weight, IntervalTr
 
 IntervalTree* incToNodeL(double l, double r, double h, double weight, IntervalTree *root)
 {
-    //cout << "inside incToNodeL\n";
     if(root->window != NULL){
-        //cout << "inside if\n";
         // left overlapping
         // a window [a,b] overlap with the left part of interval
         // breaks the window into two windows [a,l] [l,b]
@@ -256,7 +255,6 @@ IntervalTree* incToNodeL(double l, double r, double h, double weight, IntervalTr
         }
     }
 
-    //cout << "outside if\n";
 
     if(root->discriminant == l) return root;
     else if(root->discriminant < l) return incToNodeL(l, r, h, weight, root->right_child);
@@ -361,24 +359,17 @@ void incIntervalTree(double h, double l, double r, double weight, IntervalTree *
     IntervalTree *node_l = findLeafNode(root, l, h);
     IntervalTree *node_r = findLeafNode(root, r, h);
 
-    //cout << "after findNodes\n";
-
     /*
     System.out.println("node_v: " + node_v);
     System.out.println("node_l: " + node_l);
     System.out.println("node_r: " + node_r);
     */
-    incToNodeV(l, r, h, weight, root);
 
-    //cout << "after incToNodeV\n";
+    incToNodeV(l, r, h, weight, root);
 
     incToNodeL(l, r, h, weight, node_v->left_child);
 
-    //cout << "after incToNodeL\n";
-
     incToNodeR(l, r, h, weight, node_v->right_child);
-
-    //cout << "after incToNodeR\n";
 
     updateToNode(node_l, node_v);
     updateToNode(node_r, node_v);
@@ -496,7 +487,6 @@ void decToNode(double l, double r, double h, double weight, IntervalTree *root, 
 // then traverse the interval tree to merge or change affected windows
 void decIntervalTree(double h, double l, double r, double weight, IntervalTree *root)
 {
-    ///puts("In decIntervalTree");
 
     left_intersect1 = NULL;
     left_intersect2 = NULL;
@@ -504,30 +494,24 @@ void decIntervalTree(double h, double l, double r, double weight, IntervalTree *
     right_intersect2 = NULL;
 
     IntervalTree *node_v = findNodeV(root, l, r, h);
-    ///GETTING SEGMENTATION FAULT HERE
-    ///puts("after findNodeV");
 
     IntervalTree *node_l = findLeafNode(root, l, h);
     IntervalTree *node_r = findLeafNode(root, r, h);
-
-    ///puts("Reached 473");
 
     /*
     System.out.println("node_v: " + node_v);
     System.out.println("node_l: " + node_l);
     System.out.println("node_r: " + node_r);
     */
+
     decToNode(l, r, h, weight, root, 'v');
     decToNode(l, r, h, weight, node_v->left_child, 'l');
     decToNode(l, r, h, weight, node_v->right_child, 'r');
-
-    ///puts("Reached 484");
 
     updateToNode(node_l, node_v);
     updateToNode(node_r, node_v);
     updateToNode(node_v, root);
 
-    ///puts("Reached 490");
 }
 
 
@@ -547,13 +531,11 @@ Window* maxEnclosing(vector<Rectangle> &aListOfRectangles, Area coverage, Interv
     int botIndex = 0;
     while(topIndex < aListOfRectangles.size())
     {
-        //cout << "topIndex: " << topIndex << endl;
         // bottom index is always smaller than top index because we
         // process the bottom of a rectangle before we process the top
         // of a rectangle
         if(aListOfRectangles[topIndex].y1 <= aListOfRectangles[botIndex].y2)
         {
-            //cout << "y1 <= y2\n";
             /*
             System.out.println("bot line: y1, x1, x2: " +
                                aListOfRectangles.get(topIndex).y1 + ", " +
@@ -565,8 +547,6 @@ Window* maxEnclosing(vector<Rectangle> &aListOfRectangles, Area coverage, Interv
                                  aListOfRectangles[topIndex].x2,
                                  aListOfRectangles[topIndex].weight,
                                  root);
-
-            //cout << "after incIntervalTree\n";
 
             if(root->maxscore > optimalWindow->score)
             {
@@ -584,7 +564,6 @@ Window* maxEnclosing(vector<Rectangle> &aListOfRectangles, Area coverage, Interv
         }
         else
         {
-            //cout << "y1 > y2\n";
             /*
             System.out.println("top line: y2, x1, x2: " +
                                aListOfRectangles.get(botIndex).y2 + ", " +
@@ -596,9 +575,6 @@ Window* maxEnclosing(vector<Rectangle> &aListOfRectangles, Area coverage, Interv
                                  aListOfRectangles[botIndex].x2,
                                  aListOfRectangles[botIndex].weight,
                                  root);
-
-            ///GETTING SEGMENTATION FAULT HERE
-            ///cout << "decIntervalTree() done\n";
 
             botIndex++;
             if(root != NULL);

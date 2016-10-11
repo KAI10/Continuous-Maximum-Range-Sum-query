@@ -31,7 +31,7 @@ vector<obj> objects;
 void readDataset()
 {
     char str[200];
-    gets(str);
+    fgets(str, 199, stdin);
 
     ll p_id, nextID = 0;
     double lat, lon, time, speed;

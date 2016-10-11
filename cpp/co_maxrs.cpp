@@ -11,6 +11,11 @@
 #include "objects.h"
 using namespace std;
 
+///for changing mode (indexed <-> non-indexed)
+///comment out this line for non-indexed mode
+///and another line in event_handlers.h
+#define INDEX 1
+
 vector<vector<bool> > adjMatrix;
 vector<MovingObject> saved;
 
@@ -20,10 +25,6 @@ map<int, int>:: iterator itm;
 
 int numberOfObjects;
 
-///needed for tprtree reading
-int sampleNumber;
-string diskFileName;
-
 /// can't be solved using just priority queue
 /// idea: use the priority queue to save index in a vector
 /// that index contains events at earlies time
@@ -32,13 +33,12 @@ map<double, int> index_in_kds_data;
 vector<vector<Event> > kds_data;
 priority_queue<double, vector<double>, greater<double> > kds;
 
-#include "tree_utilities.h"
-
-///Indexpointer for tprtree
-///idx will be used in every NEW_SAMPLE_EVENT
-Index* idx;
-
-#include "tree_query.h"
+#ifdef INDEX
+    #include "tree_utilities.h"
+#else
+    #define d1 .01
+    #define d2 .01
+#endif // INDEX
 
 #include "utilities.h"
 #include "event_handlers.h"
@@ -188,25 +188,28 @@ int main()
             saved[index].cur_y = l.y_initial;
         }
 
+        #ifdef INDEX
+
         ///setup tprtree index
         sampleNumber = 0;
         diskFileName = "tprtree" + to_string(sampleNumber);
         idx = getIndexFromDisk(diskFileName.c_str(), numberOfObjects);
 
+        bool done[numberOfObjects];
+        memset(done, false, sizeof(done));
+
+        #endif // INDEX
 
         /// add the initial intersecting/non-intersecting events
         /// also set initial variable values
-
-        bool done[numberOfObjects];
-        memset(done, false, sizeof(done));
 
         for(int i=0; i<current_lines.size(); i++){
             Line l1 = current_lines[i];
             int index1 = dict1[l1.grand_id];
 
+            #ifdef INDEX
+
             done[l1.grand_id] = true;
-
-
             vector<int> intersects;
             query(intersects, l1.x_initial+x_min-d_w, l1.y_initial+y_min-d_h, l1.time_initial,
                             l1.x_final+x_min-d_w, l1.y_final+y_min-d_h, l1.time_final, l1.speed);
@@ -218,22 +221,19 @@ int main()
             }
             */
 
-
-//            for(int j=i+1; j<current_lines.size(); j++){
-
             for(int j=0; j<intersects.size(); j++){
                 int object_id = intersects[j];
-                //if(l1.grand_id == 17) cout << "pre: " << object_id << endl;
                 if(done[object_id]) continue;
-                //if(l1.grand_id == 17) cout << "after filter: " << object_id << endl;
-
-                //if(l1.grand_id == 17) cout << "object od: " << object_id << endl;
                 int line_index = object_line_map[object_id];
-                //if(l1.grand_id == 17) cout << "line index: " << line_index << endl;
-
                 Line l2 = current_lines[line_index];
-                /**/
-                //Line l2 = current_lines[j];
+
+            #else
+
+            for(int j=i+1; j<current_lines.size(); j++){
+                Line l2 = current_lines[j];
+
+            #endif // INDEX
+
                 int index2 = dict1[l2.grand_id];
 
                 /// test if currently intersecting
@@ -257,8 +257,7 @@ int main()
                     t2 += SAFETY;
                     if(hasint && t2 >= current_time && t2 < min(l1.time_final,l2.time_final)){
                         // create non-intersecting event
-                        cout << l1.grand_id << ' ' << l2.grand_id << endl;
-                        //if(l1.grand_id == 17) cout << "line index: " << object_line_map[l2.grand_id] << endl;
+                        //cout << l1.grand_id << ' ' << l2.grand_id << endl;
                         total_events = addINIEventsToKDS(l1.grand_id, l2.grand_id, total_events, t2, NON_INT);
                     }
                 }
@@ -273,8 +272,7 @@ int main()
                         computeEventTime(l1, l2, l1.x_initial, l1.y_initial, l2.x_initial, l2.y_initial, d_w, d_h, current_time, hasint, t1, t2);
                         if(hasint && t1 > current_time && t1 < min(l1.time_final,l2.time_final)){
                             // create intersecting event
-                            cout << l1.grand_id << ' ' << l2.grand_id << endl;
-                            //if(l1.grand_id == 17) cout << "line index: " << object_line_map[l2.grand_id] << endl;
+                            //cout << l1.grand_id << ' ' << l2.grand_id << endl;
                             total_events = addINIEventsToKDS(l1.grand_id, l2.grand_id, total_events, t1, INT);
                         }
                     }
@@ -422,6 +420,7 @@ int main()
             cout << " ]\n\n";
         }
 
+        cout << "Total events processed: " << total_events << endl;
     }
 
     cout << "elapsed time: " << double( clock () - begin_time ) /  CLOCKS_PER_SEC << " seconds\n";
