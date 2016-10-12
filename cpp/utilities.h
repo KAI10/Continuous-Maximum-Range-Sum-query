@@ -34,9 +34,9 @@ Area area(a_h, a_w);
 map<int, int> real_id_to_object_id;
 map<int, int>:: iterator it;
 
-int readFromMNGT(int num, vector<DataPoint>& datapoints)
+int readFromMNGT(char* fileName, int num, vector<DataPoint>& datapoints)
 {
-    string baseFileName = "3984.txt";
+    string baseFileName = fileName;
 
     int nextID = 0;
     FILE *fp;
@@ -47,7 +47,12 @@ int readFromMNGT(int num, vector<DataPoint>& datapoints)
 
     for(int i=0; i<num; i++){
         string name = baseFileName+"_"+to_string(i);
+
         fp = fopen(name.c_str(), "r");
+        if(fp == NULL){
+            cerr << "Error opening file \"" << name << "\"\n";
+            exit(1);
+        }
 
         fgets(str, 100, fp);
 

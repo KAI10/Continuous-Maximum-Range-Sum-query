@@ -41,16 +41,21 @@ priority_queue<double, vector<double>, greater<double> > kds;
 #include "utilities.h"
 #include "event_handlers.h"
 
-int main()
+int main(int argc, char **argv)
 {
+    if(argc < 2){
+        cerr << "Run Command: ./co_maxrs.out inputFileName" << endl;
+        exit(1);
+    }
+
     const clock_t begin_time = clock();
+
+    vector<DataPoint> datapoints;
+    numberOfObjects = readFromMNGT(argv[1], 1, datapoints);
+    ///cout << numberOfObjects << endl;
 
     map<int, int> dict2;
     map<int, int>:: iterator itm;
-
-    vector<DataPoint> datapoints;
-    numberOfObjects = readFromMNGT(1, datapoints);
-    ///cout << numberOfObjects << endl;
 
     vector<bool> temp(numberOfObjects, false);
     for(int i=0; i<numberOfObjects; i++) adjMatrix.push_back(temp);
