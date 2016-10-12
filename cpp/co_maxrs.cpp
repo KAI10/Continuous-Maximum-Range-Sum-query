@@ -19,16 +19,14 @@ using namespace std;
 vector<vector<bool> > adjMatrix;
 vector<MovingObject> saved;
 
-map<int, int> dict2;
 map<int, int> dict1; ///maps oid -> index in saved(MovingObject)
-map<int, int>:: iterator itm;
 
 int numberOfObjects;
 
 /// can't be solved using just priority queue
 /// idea: use the priority queue to save index in a vector
-/// that index contains events at earlies time
-/// use the set to see if an event time exists currently
+/// that index contains events at that time
+/// use the map to see if an event time exists currently
 map<double, int> index_in_kds_data;
 vector<vector<Event> > kds_data;
 priority_queue<double, vector<double>, greater<double> > kds;
@@ -46,6 +44,9 @@ priority_queue<double, vector<double>, greater<double> > kds;
 int main()
 {
     const clock_t begin_time = clock();
+
+    map<int, int> dict2;
+    map<int, int>:: iterator itm;
 
     vector<DataPoint> datapoints;
     numberOfObjects = readFromMNGT(1, datapoints);
@@ -79,6 +80,10 @@ int main()
             nextID++;
         }
     }
+
+    ///free unnecessary memory
+    dict2.clear();
+    datapoints.clear();
 
     //display();
 
@@ -334,8 +339,6 @@ int main()
 
         //cout << kds.size() << endl;
 
-        //int events_processed = 0;
-
         while(kds.size() > 0){
             //if(current_lines.size() < 500) break;
             double next_event_time = kds.top();
@@ -348,7 +351,6 @@ int main()
             int index = index_in_kds_data[next_event_time];
 
             //cout << "index: " << index << endl;
-
 
             for(int i=0; i<kds_data[index].size(); i++){
                 Event event = kds_data[index][i];
@@ -382,7 +384,6 @@ int main()
                     current_maxrs = nmaxrs;
 
                     //cout << "# of solutions: " << comaxrs.size() << endl;
-
 
                     cout << "Time range: " << current_maxrs.t1 << " to " << current_maxrs.t2 << "\nscore: " << current_maxrs.countmax
                         << "\nactual: " << current_maxrs.lobj.size() << "\n";
