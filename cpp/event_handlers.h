@@ -86,7 +86,7 @@ long long handle_NEW_SAMPLE_Event(Event event, vector<int> &current_objects, vec
 
             #endif //INDEX
 
-                if(isIntersecting(l.rect, l2.rect)){  ///this check can be excluded, but still kept for safety
+                if(isIntersecting(l.rect, l2.rect)){
                     adjMatrix[l.grand_id][l2.grand_id] = false;
                     adjMatrix[l2.grand_id][l.grand_id] = false;
 
