@@ -63,11 +63,30 @@ long long handle_NEW_SAMPLE_Event(Event event, vector<int> &current_objects, vec
             ///update adjMatrix, and intersecting objects int_num
 
             ///checking intersection in O(n), later will use tprtree query output
+            #ifdef INDEX
+
+            vector<int> intersects;
+            query(intersects, l.x_initial+x_min-d_w, l.y_initial+y_min-d_h, l.time_initial,
+                                l.x_final+x_min-d_w, l.y_final+y_min-d_h, l.time_final, l.speed);
+
+            //cout << "NO. of intersections: " << intersects.size()-1 << endl;
+
+            for(int j=0; j<intersects.size(); j++){
+                int object_id = intersects[j];
+                if(l.grand_id == object_id) continue;
+
+                int line_index = object_line_map[object_id];
+                Line l2 = current_lines[line_index];
+
+            #else
+
             for(int j=0; j<current_lines.size(); j++){
                 Line l2 = current_lines[j];
                 if(l2.grand_id == l.grand_id) continue;
 
-                if(isIntersecting(l.rect, l2.rect)){
+            #endif //INDEX
+
+                if(isIntersecting(l.rect, l2.rect)){  ///this check can be excluded, but still kept for safety
                     adjMatrix[l.grand_id][l2.grand_id] = false;
                     adjMatrix[l2.grand_id][l.grand_id] = false;
 
@@ -154,7 +173,7 @@ long long handle_NEW_SAMPLE_Event(Event event, vector<int> &current_objects, vec
         for(int j=i+1; j<nCurrent_lines.size(); j++){
             Line l2 = nCurrent_lines[j];
 
-        #endif
+        #endif //INDEX
 
             int index2 = dict1[l2.grand_id];
 
