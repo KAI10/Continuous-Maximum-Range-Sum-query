@@ -389,20 +389,20 @@ int main(int argc, char **argv)
                     current_maxrs = nmaxrs;
 
                     //cout << "# of solutions: " << comaxrs.size() << endl;
-
+                    /*
                     cout << "Time range: " << current_maxrs.t1 << " to " << current_maxrs.t2 << "\nscore: " << current_maxrs.countmax
                         << "\nactual: " << current_maxrs.lobj.size() << "\n";
                     cout << "[ ";
                     if(current_maxrs.lobj.size()) cout << current_maxrs.lobj[0];
                     for(int j=1; j<current_maxrs.lobj.size(); j++) cout << ", " << current_maxrs.lobj[j];
                     cout << " ]\n\n";
-
+                    */
                 }
 
                 else{
                     //cout << "total_events: " << total_events << endl;
                     //cout << "Solution not changed\n\n";
-                    cout << "\n";
+                    //cout << "\n";
                 }
 
                 //getchar();

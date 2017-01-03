@@ -256,6 +256,8 @@ long long handle_NEW_SAMPLE_Event(Event event, vector<int> &current_objects, vec
 
     if(current_lines.size() == 0){
         nmaxrs.lobj.clear();
+        nmaxrs.t1 = current_time;
+        nmaxrs.t2 = 100000;
         nmaxrs.countmax = 0;
         changed = true;
         return total_events;
