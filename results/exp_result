@@ -1,0 +1,30 @@
+Experiment done on dataset 3984.txt
+
+###################################
+
+query rectangle size: .1 x .1
+
+events at first: 2766 
+
+index: 132.984 seconds
+no index: 120.736 seconds
+
+##################################
+
+query rectangle size: .05 x .05
+
+events at first: 1707
+
+index: 68.9079 seconds
+no index: 93.9861 seconds
+
+##################################
+
+query rectangle size: .01 x .01
+
+events at first: 383
+
+index: 41.6028 seconds
+no index: 83.9987 seconds
+
+##################################
