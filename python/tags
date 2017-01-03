@@ -1,0 +1,259 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+Area	maxrs.py	/^class Area():$/;"	c
+CoMaxRes	objects.py	/^class CoMaxRes:$/;"	c
+DataPoint	objects.py	/^class DataPoint:$/;"	c
+Event	objects.py	/^class Event:$/;"	c
+INT	objects.py	/^    INT = 2      # intersection$/;"	v	class:Event
+IntervalTree	maxrs.py	/^class IntervalTree():$/;"	c
+Line	objects.py	/^class Line:$/;"	c
+MovingObject	objects.py	/^class MovingObject:$/;"	c
+NEW_SAMPLE	objects.py	/^    NEW_SAMPLE = 1$/;"	v	class:Event
+NON_INT	objects.py	/^    NON_INT = 3  # non-intersection$/;"	v	class:Event
+Object	maxrs.py	/^class Object():$/;"	c
+ObjectRes	objects.py	/^class ObjectRes:$/;"	c
+Query	objects.py	/^class Query:$/;"	c
+Rectangle	maxrs.py	/^class Rectangle():$/;"	c
+STEP	co_maxrs_runtime.py	/^STEP = 1$/;"	v
+STEP	co_maxrs_runtime_periodic.py	/^STEP=1$/;"	v
+ScoreRes	objects.py	/^class ScoreRes:$/;"	c
+SizeRes	objects.py	/^class SizeRes:$/;"	c
+StatMaxRes	objects.py	/^class StatMaxRes:$/;"	c
+TimeRes	objects.py	/^class TimeRes:$/;"	c
+Trajectory	objects.py	/^class Trajectory:$/;"	c
+Window	maxrs.py	/^class Window():$/;"	c
+__init__	maxrs.py	/^    def __init__(self,discriminant, father):$/;"	m	class:IntervalTree
+__init__	maxrs.py	/^    def __init__(self,height,width):$/;"	m	class:Area
+__init__	maxrs.py	/^    def __init__(self,l,r,h,score):$/;"	m	class:Window
+__init__	maxrs.py	/^    def __init__(self,x,y,weight):$/;"	m	class:Object
+__init__	maxrs.py	/^    def __init__(self,x1,y1,x2,y2,weight=1):$/;"	m	class:Rectangle
+__init__	objects.py	/^    def __init__(self):$/;"	m	class:ScoreRes
+__init__	objects.py	/^    def __init__(self):$/;"	m	class:SizeRes
+__init__	objects.py	/^    def __init__(self):$/;"	m	class:TimeRes
+__init__	objects.py	/^    def __init__(self, event_id, event_type, oid1, oid2, event_time):$/;"	m	class:Event
+__init__	objects.py	/^    def __init__(self, grand_id, parent_id, line_id, x1, y1, t1, x2, y2, t2, speed=20.0, rect=None):$/;"	m	class:Line
+__init__	objects.py	/^    def __init__(self, oid, weight=1, inSolution=False, int_num=0, x1=0.0, y1=0.0):$/;"	m	class:MovingObject
+__init__	objects.py	/^    def __init__(self, parent_id, trajectory_id, x_last=0, y_last=0, t_last=0):$/;"	m	class:Trajectory
+__init__	objects.py	/^    def __init__(self, participant_id, trip_id, latitude, longitude, time, act_speed):$/;"	m	class:DataPoint
+__init__	objects.py	/^    def __init__(self, q_id, time):$/;"	m	class:Query
+__init__	objects.py	/^    def __init__(self, t1, t2, lobj, countmax):$/;"	m	class:CoMaxRes
+__init__	objects.py	/^    def __init__(self, te=0.0, pe=0.0, ie=0.0, pie=0.0, ne=0.0, pne=0.0):$/;"	m	class:ObjectRes
+__init__	objects.py	/^    def __init__(self, x, y, countmax):$/;"	m	class:StatMaxRes
+a_h	co_maxrs_runtime.py	/^a_h = 100$/;"	v
+a_h	co_maxrs_runtime_periodic.py	/^a_h=100$/;"	v
+a_w	co_maxrs_runtime.py	/^a_w = 100$/;"	v
+a_w	co_maxrs_runtime_periodic.py	/^a_w=100$/;"	v
+addINIEventsToKDS	co_maxrs_runtime.py	/^def addINIEventsToKDS(kds, oid1, oid2, total_events, event_time, event_type):$/;"	f
+addINIEventsToKDS	co_maxrs_runtime_periodic.py	/^def addINIEventsToKDS(kds, oid1, oid2, total_events, event_time, event_type):$/;"	f
+addLineEventsToKDS	co_maxrs_runtime.py	/^def addLineEventsToKDS(kds, line, total_events, current_time):$/;"	f
+addLineEventsToKDS	co_maxrs_runtime_periodic.py	/^def addLineEventsToKDS(kds, line, total_events, current_time):$/;"	f
+addLineToTrajectory	objects.py	/^    def addLineToTrajectory(self, x1, y1, t1, speed=20):$/;"	m	class:Trajectory
+addPointsToTrajectory	objects.py	/^    def addPointsToTrajectory(self, trajectory_id, x, y, t, speed=20):$/;"	m	class:MovingObject
+addToKDS	co_maxrs_runtime.py	/^def addToKDS(kds, event):$/;"	f
+addToKDS	co_maxrs_runtime_periodic.py	/^def addToKDS(kds, event):$/;"	f
+addTrajectoryToMovingObject	objects.py	/^    def addTrajectoryToMovingObject(self, trajectory_id):$/;"	m	class:MovingObject
+adjMatrix	co_maxrs_runtime.py	/^    adjMatrix = np.array([[False for i in range(numberOfObjects)] for j in range(numberOfObjects)], bool)$/;"	v
+allQuery	co_maxrs_runtime.py	/^    allQuery = []$/;"	v
+allQuery	co_maxrs_runtime_periodic.py	/^  allQuery=[]$/;"	v
+area	co_maxrs_runtime.py	/^        area = Area(y_max - y_min + r_h, x_max - x_min + r_w)$/;"	v
+area	co_maxrs_runtime.py	/^area = Area(a_h, a_w)$/;"	v
+area	co_maxrs_runtime_periodic.py	/^      area = Area(y_max-y_min+r_h, x_max-x_min+r_w)      $/;"	v
+area	co_maxrs_runtime_periodic.py	/^area=Area(a_h, a_w)$/;"	v
+buildIntervalTree	maxrs.py	/^def buildIntervalTree(st,ed,listOfPoints,root):$/;"	f
+checkTrajectoryId	objects.py	/^    def checkTrajectoryId(self, trajectory_id):$/;"	m	class:MovingObject
+comaxrs	co_maxrs_runtime.py	/^        comaxrs = []$/;"	v
+comaxrs	co_maxrs_runtime_periodic.py	/^      comaxrs=[]$/;"	v
+computeEventTime	co_maxrs_runtime.py	/^def computeEventTime(l1, l2, p1x, p1y, p2x, p2y, d_w, d_h, current_time):$/;"	f
+computeEventTime	co_maxrs_runtime_periodic.py	/^def computeEventTime(l1, l2, p1x, p1y, p2x, p2y, d_w, d_h, current_time):$/;"	f
+coverage	co_maxrs_runtime.py	/^coverage = Area(r_h, r_w)$/;"	v
+coverage	co_maxrs_runtime_periodic.py	/^coverage=Area(r_h, r_w)$/;"	v
+csvreader2	co_maxrs_runtime.py	/^        csvreader2 = csv.reader(csvfile2, delimiter=' ')$/;"	v
+csvreader2	co_maxrs_runtime_periodic.py	/^      csvreader2 = csv.reader(csvfile2, delimiter=' ')$/;"	v
+current_lines	co_maxrs_runtime.py	/^        current_lines = []$/;"	v
+current_lines	co_maxrs_runtime_periodic.py	/^      current_lines=[]$/;"	v
+current_maxrs	co_maxrs_runtime.py	/^                        current_maxrs = nmaxrs$/;"	v
+current_maxrs	co_maxrs_runtime.py	/^        current_maxrs = CoMaxRes(current_time, 100000, lobj, opt_window.score)$/;"	v
+current_maxrs	co_maxrs_runtime_periodic.py	/^                  current_maxrs=CoMaxRes(current_time, 100000, lobj, opt_window.score)$/;"	v
+current_maxrs	co_maxrs_runtime_periodic.py	/^      current_maxrs=CoMaxRes(current_time, 100000, lobj, opt_window.score)$/;"	v
+current_objects	co_maxrs_runtime.py	/^        current_objects = []$/;"	v
+current_objects	co_maxrs_runtime_periodic.py	/^      current_objects=[]$/;"	v
+current_time	co_maxrs_runtime.py	/^                current_time = next_event$/;"	v
+current_time	co_maxrs_runtime.py	/^        current_time = 0.0$/;"	v
+current_time	co_maxrs_runtime_periodic.py	/^              current_time=next_event$/;"	v
+current_time	co_maxrs_runtime_periodic.py	/^      current_time=0.0$/;"	v
+current_trajectories	co_maxrs_runtime.py	/^        current_trajectories = []$/;"	v
+current_trajectories	co_maxrs_runtime_periodic.py	/^      current_trajectories=[]$/;"	v
+d_h	co_maxrs_runtime.py	/^        d_h = coverage.height \/ 2.0  # r_h \/ 2$/;"	v
+d_h	co_maxrs_runtime_periodic.py	/^      d_h=coverage.height\/2.0$/;"	v
+d_w	co_maxrs_runtime.py	/^        d_w = coverage.width \/ 2.0   # r_w \/ 2$/;"	v
+d_w	co_maxrs_runtime_periodic.py	/^      d_w=coverage.width\/2.0$/;"	v
+datapoints	co_maxrs_runtime_periodic.py	/^  datapoints = readFromMS()$/;"	v
+decIntervalTree	maxrs.py	/^def decIntervalTree(h,l,r,weight,root):$/;"	f
+decToNode	maxrs.py	/^def decToNode(l,r,h,weight,root,flag):$/;"	f
+delta_t	objects.py	/^delta_t = 100$/;"	v
+dict1	co_maxrs_runtime.py	/^    dict1 = collections.OrderedDict()$/;"	v
+dict1	co_maxrs_runtime_periodic.py	/^  dict1 = collections.OrderedDict()$/;"	v
+dict2	co_maxrs_runtime.py	/^    dict2 = {}$/;"	v
+dict2	co_maxrs_runtime_periodic.py	/^  dict2 = {}$/;"	v
+display	co_maxrs_runtime.py	/^def display(dict1):$/;"	f
+display	co_maxrs_runtime_periodic.py	/^def display(dict1):$/;"	f
+displayLine	objects.py	/^    def displayLine(self):$/;"	m	class:Line
+displayMovingObject	objects.py	/^    def displayMovingObject(self):$/;"	m	class:MovingObject
+displayTrajectory	objects.py	/^    def displayTrajectory(self):$/;"	m	class:Trajectory
+distance	co_maxrs_runtime.py	/^def distance(x1, y1, x2, y2):$/;"	f
+distance	co_maxrs_runtime_periodic.py	/^def distance(x1, y1, x2, y2):$/;"	f
+draw_objects	maxrs.py	/^def draw_objects(objects):$/;"	f
+draw_rectangle	maxrs.py	/^def draw_rectangle(rectangle,thickness,flag='b'):$/;"	f
+events_processed	co_maxrs_runtime.py	/^        events_processed = 0;$/;"	v
+f_time	co_maxrs_runtime.py	/^f_time = dt.strptime(first_date_s, fmt)$/;"	v
+f_time	co_maxrs_runtime_periodic.py	/^f_time=dt.strptime(first_date_s, fmt)$/;"	v
+findLeafNode	maxrs.py	/^def findLeafNode(root,v,h):$/;"	f
+findNodeV	maxrs.py	/^def findNodeV(root,l,r,h):$/;"	f
+first_date_s	co_maxrs_runtime.py	/^first_date_s = '2006-4-10 4:58:14'$/;"	v
+first_date_s	co_maxrs_runtime_periodic.py	/^first_date_s= '2006-4-10 4:58:14'$/;"	v
+fmt	co_maxrs_runtime.py	/^fmt = '%Y-%m-%d %H:%M:%S'$/;"	v
+fmt	co_maxrs_runtime_periodic.py	/^fmt= '%Y-%m-%d %H:%M:%S'$/;"	v
+fmt2	co_maxrs_runtime.py	/^fmt2 = '%m\/%d\/%Y %H:%M:%S'$/;"	v
+fmt2	co_maxrs_runtime_periodic.py	/^fmt2= '%m\/%d\/%Y %H:%M:%S'$/;"	v
+getMax	co_maxrs_runtime.py	/^def getMax(x2, x4):$/;"	f
+getMax	co_maxrs_runtime_periodic.py	/^def getMax(x2,x4):$/;"	f
+getMin	co_maxrs_runtime.py	/^def getMin(x1, x3):$/;"	f
+getMin	co_maxrs_runtime_periodic.py	/^def getMin(x1,x3):$/;"	f
+getOpposite	co_maxrs_runtime.py	/^def getOpposite(f, t1, t2):$/;"	f
+getOpposite	co_maxrs_runtime_periodic.py	/^def getOpposite(f, t1, t2):$/;"	f
+getTimeInSeconds	co_maxrs_runtime.py	/^def getTimeInSeconds(timestr):$/;"	f
+getTimeInSeconds	co_maxrs_runtime_periodic.py	/^def getTimeInSeconds(timestr):$/;"	f
+handleEvent	co_maxrs_runtime.py	/^def handleEvent(e, current_lines, current_objects, total_events, kds, dict1, iteration, current_time, object_line_map, current_maxrs, d_w,$/;"	f
+handleEvent	co_maxrs_runtime_periodic.py	/^def handleEvent(e, current_lines, current_objects, total_events, kds, dict1, iteration, current_time, object_line_map, current_maxrs, d_w, d_h):$/;"	f
+hasOverlap	co_maxrs_runtime.py	/^def hasOverlap(l1, l2, d_w, d_h):$/;"	f
+hasOverlap	co_maxrs_runtime_periodic.py	/^def hasOverlap(l1, l2, d_w, d_h):$/;"	f
+hlist	co_maxrs_runtime.py	/^                hlist = kds[list(kds)[0]]   # hlist(list of events) contains events occuring at current time$/;"	v
+hlist	co_maxrs_runtime_periodic.py	/^              hlist=kds[list(kds)[0]]$/;"	v
+inOrderTraverse	maxrs.py	/^def inOrderTraverse(root,l):$/;"	f
+incIntervalTree	maxrs.py	/^def incIntervalTree(h,l,r,weight,root):$/;"	f
+incToNodeL	maxrs.py	/^def incToNodeL(l,r,h,weight,root):$/;"	f
+incToNodeR	maxrs.py	/^def incToNodeR(l,r,h,weight,root):$/;"	f
+incToNodeV	maxrs.py	/^def incToNodeV(l,r,h,weight,root):$/;"	f
+insertWindow	maxrs.py	/^def insertWindow(window,root):$/;"	f
+interval_tree_root	maxrs.py	/^interval_tree_root = None$/;"	v
+isIntersecting	co_maxrs_runtime.py	/^def isIntersecting(r1, r2):$/;"	f
+isIntersecting	co_maxrs_runtime_periodic.py	/^def isIntersecting(r1, r2): $/;"	f
+isProcessed	co_maxrs_runtime.py	/^        isProcessed = {}$/;"	v
+isProcessed	co_maxrs_runtime_periodic.py	/^      isProcessed={}$/;"	v
+isWithin	co_maxrs_runtime.py	/^def isWithin(x, y, rect):$/;"	f
+isWithin	co_maxrs_runtime_periodic.py	/^def isWithin(x, y, rect):$/;"	f
+kds	co_maxrs_runtime.py	/^        kds = py_treap.treap()$/;"	v
+kds	co_maxrs_runtime_periodic.py	/^      kds=py_treap.treap()$/;"	v
+l	co_maxrs_runtime.py	/^            l = trj.path[len(trj.path) - 1]$/;"	v
+l	co_maxrs_runtime_periodic.py	/^          l=trj.path[len(trj.path)-1]$/;"	v
+l1	co_maxrs_runtime.py	/^            l1 = current_lines[i]$/;"	v
+l1	co_maxrs_runtime_periodic.py	/^          l1=current_lines[i]$/;"	v
+l2	co_maxrs_runtime.py	/^                l2 = current_lines[j]$/;"	v
+l2	co_maxrs_runtime_periodic.py	/^              l2=current_lines[j]$/;"	v
+last_process	co_maxrs_runtime_periodic.py	/^                  last_process = current_time$/;"	v
+last_process	co_maxrs_runtime_periodic.py	/^      last_process=-10.0$/;"	v
+left_found	maxrs.py	/^left_found = False$/;"	v
+left_intersect1	maxrs.py	/^left_intersect1 = None$/;"	v
+left_intersect2	maxrs.py	/^left_intersect2 = None$/;"	v
+lobj	co_maxrs_runtime.py	/^        lobj = []$/;"	v
+lobj	co_maxrs_runtime_periodic.py	/^                  lobj=[]$/;"	v
+lobj	co_maxrs_runtime_periodic.py	/^      lobj=[]$/;"	v
+max_enclosing	maxrs.py	/^def max_enclosing(rectangles, coverage, root):$/;"	f
+mo	co_maxrs_runtime.py	/^            mo = dict1[l.grand_id]$/;"	v
+mo	co_maxrs_runtime_periodic.py	/^                      mo = dict1[l.grand_id]$/;"	v
+mo	co_maxrs_runtime_periodic.py	/^          mo = dict1[l.grand_id]$/;"	v
+moving_object_1	co_maxrs_runtime.py	/^            moving_object_1 = MovingObject(dp.participant_id)$/;"	v
+moving_object_1	co_maxrs_runtime_periodic.py	/^      moving_object_1 = MovingObject(dp.participant_id)$/;"	v
+next_event	co_maxrs_runtime.py	/^                next_event = list(kds)[0]$/;"	v
+next_event	co_maxrs_runtime.py	/^        next_event = 100000.0$/;"	v
+next_event	co_maxrs_runtime.py	/^        next_event = list(kds)[0]$/;"	v
+next_event	co_maxrs_runtime_periodic.py	/^              next_event=list(kds)[0]$/;"	v
+next_event	co_maxrs_runtime_periodic.py	/^      next_event=100000.0$/;"	v
+next_event	co_maxrs_runtime_periodic.py	/^      next_event=list(kds)[0]$/;"	v
+next_query	co_maxrs_runtime.py	/^        next_query = 100000.0$/;"	v
+next_query	co_maxrs_runtime_periodic.py	/^      next_query=100000.0$/;"	v
+obj	co_maxrs_runtime.py	/^            obj = Object(mo.cur_x, mo.cur_y, mo.weight)$/;"	v
+obj	co_maxrs_runtime_periodic.py	/^                      obj = Object(mo.cur_x, mo.cur_y, mo.weight)$/;"	v
+obj	co_maxrs_runtime_periodic.py	/^          obj = Object(mo.cur_x, mo.cur_y, mo.weight)$/;"	v
+object_id_to_real_id	co_maxrs_runtime.py	/^    object_id_to_real_id = []   # ASHIK: This list maps: object id -> real participant_id, not valid for MNGT due to multiple files$/;"	v
+object_line_map	co_maxrs_runtime.py	/^        object_line_map = {}$/;"	v
+object_line_map	co_maxrs_runtime_periodic.py	/^      object_line_map={}$/;"	v
+objects	co_maxrs_runtime.py	/^        objects = []$/;"	v
+objects	co_maxrs_runtime_periodic.py	/^                  objects=[]$/;"	v
+objects	co_maxrs_runtime_periodic.py	/^      objects=[]$/;"	v
+ok	co_maxrs_runtime_periodic.py	/^                               ok=0$/;"	v
+ok	co_maxrs_runtime_periodic.py	/^                         ok=0$/;"	v
+opt_window	co_maxrs_runtime.py	/^        opt_window = process_maxrs(area, coverage, objects)$/;"	v
+opt_window	co_maxrs_runtime_periodic.py	/^                  opt_window=process_maxrs(area, coverage, objects)$/;"	v
+opt_window	co_maxrs_runtime_periodic.py	/^      opt_window=process_maxrs(area, coverage, objects)$/;"	v
+preOrderTraverse	maxrs.py	/^def preOrderTraverse(root,l):$/;"	f
+process_maxrs	maxrs.py	/^def process_maxrs(area, coverage, objects):$/;"	f
+propagateExcess	maxrs.py	/^def propagateExcess(root,h):$/;"	f
+r_h	co_maxrs_runtime.py	/^r_h = 1000$/;"	v
+r_h	co_maxrs_runtime_periodic.py	/^r_h=1000$/;"	v
+r_w	co_maxrs_runtime.py	/^r_w = 1000$/;"	v
+r_w	co_maxrs_runtime_periodic.py	/^r_w=1000$/;"	v
+readFromBike	co_maxrs_runtime.py	/^def readFromBike(num):$/;"	f
+readFromBike	co_maxrs_runtime_periodic.py	/^def readFromBike():$/;"	f
+readFromMNGT	co_maxrs_runtime.py	/^def readFromMNGT(num):$/;"	f
+readFromMNGT	co_maxrs_runtime_periodic.py	/^def readFromMNGT():$/;"	f
+readFromMS	co_maxrs_runtime.py	/^def readFromMS():$/;"	f
+readFromMS	co_maxrs_runtime_periodic.py	/^def readFromMS():$/;"	f
+readInput	maxrs.py	/^def readInput(area, rectangle):$/;"	f
+real_id_to_object_id	co_maxrs_runtime.py	/^    real_id_to_object_id = {}    # ASHIK: This dictionary maps: participant_id -> object id, not valid for MNGT due to multiple files$/;"	v
+rect	co_maxrs_runtime.py	/^        rect = Rectangle(max(0, x_co - d_w), max(0, y_co - d_h),$/;"	v
+rect	co_maxrs_runtime_periodic.py	/^                  rect=Rectangle(max(0,x_co-d_w),max(0,y_co - d_h),$/;"	v
+rect	co_maxrs_runtime_periodic.py	/^      rect=Rectangle(max(0,x_co-d_w),max(0,y_co - d_h),$/;"	v
+right_found	maxrs.py	/^right_found = False$/;"	v
+right_intersect1	maxrs.py	/^right_intersect1 = None$/;"	v
+right_intersect2	maxrs.py	/^right_intersect2 = None$/;"	v
+setCurrentLoc	co_maxrs_runtime.py	/^def setCurrentLoc(l, obj, current_time):    # current location of object found by linear interpolation$/;"	f
+setCurrentLoc	co_maxrs_runtime_periodic.py	/^def setCurrentLoc(l, obj, current_time):$/;"	f
+t1	co_maxrs_runtime.py	/^        t1 = time.clock()$/;"	v
+t1	co_maxrs_runtime_periodic.py	/^      t1=time.clock()$/;"	v
+t2	co_maxrs_runtime.py	/^        t2 = time.clock()$/;"	v
+t2	co_maxrs_runtime_periodic.py	/^      t2=time.clock()$/;"	v
+tempmaxrs	co_maxrs_runtime.py	/^                        tempmaxrs = CoMaxRes(current_maxrs.t1, current_time, tempobj, current_maxrs.countmax)$/;"	v
+tempmaxrs	co_maxrs_runtime.py	/^        tempmaxrs = CoMaxRes(current_maxrs.t1, current_time, tempobj, current_maxrs.countmax)$/;"	v
+tempmaxrs	co_maxrs_runtime_periodic.py	/^      tempmaxrs=CoMaxRes(current_maxrs.t1, current_time, tempobj, current_maxrs.countmax)$/;"	v
+tempobj	co_maxrs_runtime.py	/^                        tempobj = []$/;"	v
+tempobj	co_maxrs_runtime.py	/^        tempobj = []$/;"	v
+tempobj	co_maxrs_runtime_periodic.py	/^      tempobj=[]$/;"	v
+time_iter	co_maxrs_runtime.py	/^    time_iter = []$/;"	v
+time_iter	co_maxrs_runtime_periodic.py	/^  time_iter=[]$/;"	v
+times	co_maxrs_runtime.py	/^    times = []$/;"	v
+times	co_maxrs_runtime_periodic.py	/^  times=[]$/;"	v
+total_events	co_maxrs_runtime.py	/^                            total_events = addINIEventsToKDS(kds, l1.grand_id, l2.grand_id, total_events, t1, Event.INT)$/;"	v
+total_events	co_maxrs_runtime.py	/^                        total_events = addINIEventsToKDS(kds, l1.grand_id, l2.grand_id, total_events, t2, Event.NON_INT)$/;"	v
+total_events	co_maxrs_runtime.py	/^            total_events = addLineEventsToKDS(kds, line, total_events, current_time)    # add line change events in kds for current lines$/;"	v
+total_events	co_maxrs_runtime.py	/^        total_events = 0$/;"	v
+total_events	co_maxrs_runtime_periodic.py	/^          total_events=addLineEventsToKDS(kds, line, total_events, current_time) $/;"	v
+total_events	co_maxrs_runtime_periodic.py	/^      total_events=0$/;"	v
+tperiod	co_maxrs_runtime_periodic.py	/^  tperiod=2$/;"	v
+updateToNode	maxrs.py	/^def updateToNode(cur, end_node):$/;"	f
+x_co	co_maxrs_runtime.py	/^        x_co = (opt_window.l + opt_window.r) \/ 2.0$/;"	v
+x_co	co_maxrs_runtime_periodic.py	/^                  x_co=(opt_window.l + opt_window.r)\/2.0$/;"	v
+x_co	co_maxrs_runtime_periodic.py	/^      x_co=(opt_window.l + opt_window.r)\/2.0$/;"	v
+x_max	co_maxrs_runtime.py	/^        x_max = 0           # -INF$/;"	v
+x_max	co_maxrs_runtime_periodic.py	/^                  x_max=l.x_initial                  $/;"	v
+x_max	co_maxrs_runtime_periodic.py	/^              x_max=l.x_final                  $/;"	v
+x_max	co_maxrs_runtime_periodic.py	/^      x_max=0$/;"	v
+x_min	co_maxrs_runtime.py	/^        x_min = 100000000   # +INF$/;"	v
+x_min	co_maxrs_runtime_periodic.py	/^                  x_min=l.x_initial$/;"	v
+x_min	co_maxrs_runtime_periodic.py	/^              x_min=l.x_final$/;"	v
+x_min	co_maxrs_runtime_periodic.py	/^      x_min=100000000$/;"	v
+y_co	co_maxrs_runtime.py	/^        y_co = opt_window.h$/;"	v
+y_co	co_maxrs_runtime_periodic.py	/^                  y_co=opt_window.h$/;"	v
+y_co	co_maxrs_runtime_periodic.py	/^      y_co=opt_window.h$/;"	v
+y_max	co_maxrs_runtime.py	/^        y_max = 0$/;"	v
+y_max	co_maxrs_runtime_periodic.py	/^                  y_max=l.y_initial$/;"	v
+y_max	co_maxrs_runtime_periodic.py	/^              y_max=l.y_final  $/;"	v
+y_max	co_maxrs_runtime_periodic.py	/^      y_max=0$/;"	v
+y_min	co_maxrs_runtime.py	/^        y_min = 100000000$/;"	v
+y_min	co_maxrs_runtime_periodic.py	/^                  y_min=l.y_initial$/;"	v
+y_min	co_maxrs_runtime_periodic.py	/^              y_min=l.y_final$/;"	v
+y_min	co_maxrs_runtime_periodic.py	/^      y_min=100000000$/;"	v

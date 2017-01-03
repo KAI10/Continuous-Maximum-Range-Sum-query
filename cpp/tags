@@ -1,0 +1,220 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+Area	Area.h	/^    Area(double height, double width){$/;"	f	struct:Area
+Area	Area.h	/^struct Area$/;"	s
+CoMaxRes	objects.h	/^    CoMaxRes(){}$/;"	f	struct:CoMaxRes
+CoMaxRes	objects.h	/^    CoMaxRes(double t1, double t2, vector<int> lobj, double countmax){$/;"	f	struct:CoMaxRes
+CoMaxRes	objects.h	/^struct CoMaxRes$/;"	s
+DINF	utilities.h	/^const double DINF = 100000000.0;$/;"	v
+DataPoint	objects.h	/^    DataPoint(int participant_id, int trip_id, double latitude, double longitude, double time, double act_speed){$/;"	f	struct:DataPoint
+DataPoint	objects.h	/^struct DataPoint$/;"	s
+Event	objects.h	/^    Event(int event_id, int event_type, int oid1, int oid2, double event_time){$/;"	f	struct:Event
+Event	objects.h	/^struct Event$/;"	s
+HORIZON	tree_utilities.h	/^const double HORIZON = 1e10;$/;"	v
+IINF	utilities.h	/^const int IINF = 100000000;$/;"	v
+INDEX	co_maxrs.cpp	17;"	d	file:
+INDEX	event_handlers.h	10;"	d
+INT	objects.h	/^const int INT = 2;$/;"	v
+IntervalTree	IntervalTree.h	/^    IntervalTree(double discriminant, IntervalTree *father){$/;"	f	struct:IntervalTree
+IntervalTree	IntervalTree.h	/^struct IntervalTree$/;"	s
+Line	objects.h	/^    Line(int grand_id, int parent_id, int line_id, double x1, double y1, double t1, double x2,double y2, double t2, double speed=20.0,$/;"	f	struct:Line
+Line	objects.h	/^struct Line$/;"	s
+MovingObject	objects.h	/^    MovingObject(int oid, double weight=1, bool inSolution=false, int int_num=0, double x1=0.0, double y1=0.0){$/;"	f	struct:MovingObject
+MovingObject	objects.h	/^struct MovingObject$/;"	s
+NEW_SAMPLE	objects.h	/^const int NEW_SAMPLE = 1;$/;"	v
+NON_INT	objects.h	/^const int NON_INT = 3;$/;"	v
+Object	Object.h	/^    Object(double x, double y, double weight){$/;"	f	struct:Object
+Object	Object.h	/^struct Object$/;"	s
+PT	tree_utilities.h	/^    PT() {}$/;"	f	struct:PT
+PT	tree_utilities.h	/^    PT(double lt, double ln)$/;"	f	struct:PT
+PT	tree_utilities.h	/^struct PT$/;"	s
+Rectangle	Rectangle.h	/^    Rectangle(double x1, double y1, double x2, double y2, double weight=1.0){$/;"	f	struct:Rectangle
+Rectangle	Rectangle.h	/^struct Rectangle$/;"	s
+SAFETY	utilities.h	/^const double SAFETY = 0.005;$/;"	v
+STEP	utilities.h	/^const int STEP = 1;$/;"	v
+Set	objects.h	/^    void Set(double t1, double t2, vector<int> lobj, double countmax){$/;"	f	struct:CoMaxRes
+Trajectory	objects.h	/^    Trajectory(int parent_id, int trajectory_id, double x_last=0, double y_last=0, double t_last=0){$/;"	f	struct:Trajectory
+Trajectory	objects.h	/^struct Trajectory$/;"	s
+Window	Window.h	/^    Window(double l, double r, double h, double score){$/;"	f	struct:Window
+Window	Window.h	/^struct Window$/;"	s
+a_h	utilities.h	/^const double a_h = 100;$/;"	v
+a_w	utilities.h	/^const double a_w = 100;$/;"	v
+act_speed	objects.h	/^    double latitude, longitude, time, act_speed;$/;"	m	struct:DataPoint
+addINIEventsToKDS	utilities.h	/^long long addINIEventsToKDS(int oid1, int oid2, long long total_events, double event_time, int event_type){$/;"	f
+addLineEventsToKDS	utilities.h	/^long long addLineEventsToKDS(long long total_events, double current_time, double event_time){$/;"	f
+addLineToTrajectory	objects.h	/^    void addLineToTrajectory(double x1, double y1, double t1, double speed=20){$/;"	f	struct:Trajectory
+addPointsToTrajectory	objects.h	/^    void addPointsToTrajectory(int trajectory_id, double x, double y, double t, double speed=20){$/;"	f	struct:MovingObject
+addToKDS	utilities.h	/^void addToKDS(Event event)$/;"	f
+addTrajectoryToMovingObject	objects.h	/^    void addTrajectoryToMovingObject(int trajectory_id){$/;"	f	struct:MovingObject
+buildIntervalTree	maxrs_utilities.h	/^IntervalTree* buildIntervalTree(int st, int ed, vector<double> listOfPoints, IntervalTree *root)$/;"	f
+buildTree	buildAllTPRTrees.cpp	/^int buildTree(Index* idx, int take)$/;"	f
+checkTrajectoryId	objects.h	/^    bool checkTrajectoryId(int trajectory_id){$/;"	f	struct:MovingObject
+clone	Window.h	/^    Window* clone(){$/;"	f	struct:Window
+computeEventTime	utilities.h	/^void computeEventTime(Line l1, Line l2, double p1x, double p1y, double p2x, double p2y, double d_w, double d_h, double current_time,$/;"	f
+count	objects.h	/^    int parent_id, trajectory_id, count;$/;"	m	struct:Trajectory
+countmax	objects.h	/^    double t1, t2, countmax;$/;"	m	struct:CoMaxRes
+createIndex	buildAllTPRTrees.cpp	/^Index* createIndex(const char *diskFileName, unsigned long capacity)$/;"	f
+cur_x	objects.h	/^    double weight, cur_x, cur_y;$/;"	m	struct:MovingObject
+cur_y	objects.h	/^    double weight, cur_x, cur_y;$/;"	m	struct:MovingObject
+d1	co_maxrs.cpp	37;"	d	file:
+d1	tree_utilities.h	22;"	d
+d2	co_maxrs.cpp	38;"	d	file:
+d2	tree_utilities.h	23;"	d
+d_h	utilities.h	/^        d_h; \/\/\/ r_h\/2$/;"	v
+d_w	utilities.h	/^        d_w, \/\/\/ r_w\/2$/;"	v
+decIntervalTree	maxrs_utilities.h	/^void decIntervalTree(double h, double l, double r, double weight, IntervalTree *root)$/;"	f
+decToNode	maxrs_utilities.h	/^void decToNode(double l, double r, double h, double weight, IntervalTree *root, char flag)$/;"	f
+delta_t	objects.h	/^const double delta_t = 100;$/;"	v
+di	objects.h	/^    double x_initial, y_initial, time_initial, x_final, y_final, time_final, speed, di;$/;"	m	struct:Line
+dict1	co_maxrs.cpp	/^map<int, int> dict1; \/\/\/maps oid -> index in saved(MovingObject)$/;"	v
+discriminant	IntervalTree.h	/^    double discriminant;$/;"	m	struct:IntervalTree
+diskFileName	tree_utilities.h	/^string diskFileName;$/;"	v
+display	IntervalTree.h	/^    void display(){$/;"	f	struct:IntervalTree
+display	Window.h	/^    void display(){$/;"	f	struct:Window
+display	utilities.h	/^void display(vector<MovingObject>& saved)$/;"	f
+displayLine	objects.h	/^    void displayLine(){$/;"	f	struct:Line
+displayMovingObject	objects.h	/^    void displayMovingObject(){$/;"	f	struct:MovingObject
+displayTrajectory	objects.h	/^    void displayTrajectory(){$/;"	f	struct:Trajectory
+dist	objects.h	/^double dist(double x1, double y1, double x2, double y2)$/;"	f
+event_id	objects.h	/^    int event_id, event_type, oid1, oid2;$/;"	m	struct:Event
+event_time	objects.h	/^    double event_time;$/;"	m	struct:Event
+event_type	objects.h	/^    int event_id, event_type, oid1, oid2;$/;"	m	struct:Event
+excess	IntervalTree.h	/^    double excess;   \/\/ not sure$/;"	m	struct:IntervalTree
+father	IntervalTree.h	/^    IntervalTree *father;$/;"	m	struct:IntervalTree
+findLeafNode	maxrs_utilities.h	/^IntervalTree* findLeafNode(IntervalTree *root, double v, double h)$/;"	f
+findNodeV	maxrs_utilities.h	/^IntervalTree* findNodeV(IntervalTree *root, double l, double r, double h)$/;"	f
+getBottomLeftPoint	tree_utilities.h	/^inline PT getBottomLeftPoint(PT p)$/;"	f
+getIndexFromDisk	tree_utilities.h	/^Index* getIndexFromDisk(const char* diskFileName, unsigned long capacity)$/;"	f
+getUpperRightPoint	tree_utilities.h	/^inline PT getUpperRightPoint(PT p)$/;"	f
+getVelocity	tree_utilities.h	/^PT getVelocity(sample &one, sample &two)$/;"	f
+grand_id	objects.h	/^    int grand_id, parent_id, line_id;$/;"	m	struct:Line
+h	Window.h	/^    double l, r, h, score;$/;"	m	struct:Window
+handle_INT_Event	event_handlers.h	/^long long handle_INT_Event(Event event, vector<Line> &current_lines, map<int, int> &object_line_map, long long total_events, double current_time,$/;"	f
+handle_NEW_SAMPLE_Event	event_handlers.h	/^long long handle_NEW_SAMPLE_Event(Event event, vector<int> &current_objects, vector<Line> &current_lines, vector<Trajectory> &current_trajectories,$/;"	f
+handle_NON_INT_Event	event_handlers.h	/^long long handle_NON_INT_Event(Event event, vector<Line> &current_lines, map<int, int> &object_line_map, long long total_events, double current_time,$/;"	f
+hasOverlap	utilities.h	/^bool hasOverlap(Line l1, Line l2, double d_w, double d_h){$/;"	f
+height	Area.h	/^    double height, width;$/;"	m	struct:Area
+id	tree_utilities.h	/^    ll id;$/;"	m	struct:obj
+idx	tree_utilities.h	/^Index* idx;$/;"	v
+inSolution	objects.h	/^    bool inSolution;$/;"	m	struct:MovingObject
+incIntervalTree	maxrs_utilities.h	/^void incIntervalTree(double h, double l, double r, double weight, IntervalTree *root)$/;"	f
+incToNodeL	maxrs_utilities.h	/^IntervalTree* incToNodeL(double l, double r, double h, double weight, IntervalTree *root)$/;"	f
+incToNodeR	maxrs_utilities.h	/^IntervalTree* incToNodeR(double l, double r, double h, double weight, IntervalTree *root)$/;"	f
+incToNodeV	maxrs_utilities.h	/^IntervalTree* incToNodeV(double l, double r, double h, double weight, IntervalTree *root)$/;"	f
+index_in_kds_data	co_maxrs.cpp	/^map<double, int> index_in_kds_data;$/;"	v
+insertMovingRegion	tree_utilities.h	/^bool insertMovingRegion(Index *idx, sample &first, sample &second, int64_t id)$/;"	f
+insertWindow	maxrs_utilities.h	/^IntervalTree* insertWindow(Window *window, IntervalTree *root)$/;"	f
+inst	tree_utilities.h	/^    vector<sample> inst;$/;"	m	struct:obj
+int_num	objects.h	/^    int object_id, int_num;$/;"	m	struct:MovingObject
+interval_tree_root	maxrs_utilities.h	/^IntervalTree *interval_tree_root = NULL;$/;"	v
+isIntersecting	utilities.h	/^bool isIntersecting(Rectangle *r1, Rectangle *r2){$/;"	f
+isWithin	utilities.h	/^bool isWithin(double x, double y, Rectangle rect){$/;"	f
+it	buildAllTPRTrees.cpp	/^map<ll, ll>::iterator it;$/;"	v
+it	utilities.h	/^map<int, int>:: iterator it;$/;"	v
+kds	co_maxrs.cpp	/^priority_queue<double, vector<double>, greater<double> > kds;$/;"	v
+kds_data	co_maxrs.cpp	/^vector<vector<Event> > kds_data;$/;"	v
+l	Window.h	/^    double l, r, h, score;$/;"	m	struct:Window
+lat	tree_utilities.h	/^    double lat, lon, time, speed;$/;"	m	struct:sample
+lat	tree_utilities.h	/^    double lat, lon;$/;"	m	struct:PT
+latitude	objects.h	/^    double latitude, longitude, time, act_speed;$/;"	m	struct:DataPoint
+left_child	IntervalTree.h	/^    IntervalTree *left_child;$/;"	m	struct:IntervalTree
+left_found	maxrs_utilities.h	/^bool left_found = false;$/;"	v
+left_intersect1	maxrs_utilities.h	/^IntervalTree *left_intersect1 = NULL;$/;"	v
+left_intersect2	maxrs_utilities.h	/^IntervalTree *left_intersect2 = NULL;$/;"	v
+line_id	objects.h	/^    int grand_id, parent_id, line_id;$/;"	m	struct:Line
+ll	buildAllTPRTrees.cpp	/^typedef long long ll;$/;"	t	file:
+ll	tree_utilities.h	/^typedef long long ll;$/;"	t
+lobj	objects.h	/^    vector<int> lobj;$/;"	m	struct:CoMaxRes
+lon	tree_utilities.h	/^    double lat, lon, time, speed;$/;"	m	struct:sample
+lon	tree_utilities.h	/^    double lat, lon;$/;"	m	struct:PT
+longitude	objects.h	/^    double latitude, longitude, time, act_speed;$/;"	m	struct:DataPoint
+main	buildAllTPRTrees.cpp	/^int main(int argc, char** argv)$/;"	f
+main	co_maxrs.cpp	/^int main(int argc, char **argv)$/;"	f
+maxEnclosing	maxrs_utilities.h	/^Window* maxEnclosing(vector<Rectangle> &aListOfRectangles, Area coverage, IntervalTree *root)$/;"	f
+maxscore	IntervalTree.h	/^    double maxscore; \/\/ not sure$/;"	m	struct:IntervalTree
+mem	buildAllTPRTrees.cpp	20;"	d	file:
+mem	tree_utilities.h	19;"	d
+numberOfObjects	co_maxrs.cpp	/^int numberOfObjects;$/;"	v
+obj	tree_utilities.h	/^struct obj$/;"	s
+object_id	objects.h	/^    int object_id, int_num;$/;"	m	struct:MovingObject
+objects	buildAllTPRTrees.cpp	/^vector<obj> objects;$/;"	v
+offset	objects.h	/^    double x_last, y_last, t_last, offset;$/;"	m	struct:Trajectory
+oid1	objects.h	/^    int event_id, event_type, oid1, oid2;$/;"	m	struct:Event
+oid2	objects.h	/^    int event_id, event_type, oid1, oid2;$/;"	m	struct:Event
+operator <	Object.h	/^    bool operator<(const Object &p)const{$/;"	f	struct:Object
+operator <	tree_utilities.h	/^    bool operator<(const sample &p)const$/;"	f	struct:sample
+parent_id	objects.h	/^    int grand_id, parent_id, line_id;$/;"	m	struct:Line
+parent_id	objects.h	/^    int parent_id, trajectory_id, count;$/;"	m	struct:Trajectory
+participant_id	objects.h	/^    int participant_id, trip_id;$/;"	m	struct:DataPoint
+path	objects.h	/^    vector<Line> path;$/;"	m	struct:Trajectory
+pb	buildAllTPRTrees.cpp	21;"	d	file:
+pb	tree_utilities.h	20;"	d
+preOrderTraverse	maxrs_utilities.h	/^void preOrderTraverse(IntervalTree *root)$/;"	f
+process_maxrs	maxrs.cpp	/^Window* process_maxrs(Area area, Area coverage, vector<Object> &objects)$/;"	f
+propagateExcess	maxrs_utilities.h	/^void propagateExcess(IntervalTree *root, double h)$/;"	f
+query	tree_utilities.h	/^void query(vector<int> &res, double x1, double y1, double t1, double x2, double y2, double t2, double speed)$/;"	f
+r	Window.h	/^    double l, r, h, score;$/;"	m	struct:Window
+r_h	utilities.h	/^const double r_h = d2;$/;"	v
+r_w	utilities.h	/^const double r_w = d1;$/;"	v
+readDataset	buildAllTPRTrees.cpp	/^void readDataset()$/;"	f
+readFromMNGT	utilities.h	/^int readFromMNGT(char* fileName, int num, vector<DataPoint>& datapoints)$/;"	f
+real_id_to_object_id	buildAllTPRTrees.cpp	/^map<ll, ll> real_id_to_object_id;$/;"	v
+real_id_to_object_id	utilities.h	/^map<int, int> real_id_to_object_id;$/;"	v
+rect	objects.h	/^    Rectangle *rect;$/;"	m	struct:Line
+restrict_precision	maxrs_utilities.h	/^void restrict_precision(double &val)$/;"	f
+restrict_precision	maxrs_utilities.h	/^void restrict_precision(vector<Object> &objects)$/;"	f
+right_child	IntervalTree.h	/^    IntervalTree *right_child;$/;"	m	struct:IntervalTree
+right_found	maxrs_utilities.h	/^bool right_found = false;$/;"	v
+right_intersect1	maxrs_utilities.h	/^IntervalTree *right_intersect1 = NULL;$/;"	v
+right_intersect2	maxrs_utilities.h	/^IntervalTree *right_intersect2 = NULL;$/;"	v
+sample	tree_utilities.h	/^    sample() {}$/;"	f	struct:sample
+sample	tree_utilities.h	/^    sample(double lt, double ln, double tm, double sp)$/;"	f	struct:sample
+sample	tree_utilities.h	/^struct sample$/;"	s
+sampleNumber	tree_utilities.h	/^int sampleNumber;$/;"	v
+saved	co_maxrs.cpp	/^vector<MovingObject> saved;$/;"	v
+score	Window.h	/^    double l, r, h, score;$/;"	m	struct:Window
+setCurrentLoc	utilities.h	/^void setCurrentLoc(Line l, MovingObject &obj, double current_time){    \/\/\/ current location of object found by linear interpolation$/;"	f
+showDataset	buildAllTPRTrees.cpp	/^void showDataset(int ind)$/;"	f
+speed	objects.h	/^    double x_initial, y_initial, time_initial, x_final, y_final, time_final, speed, di;$/;"	m	struct:Line
+speed	tree_utilities.h	/^    double lat, lon, time, speed;$/;"	m	struct:sample
+t1	objects.h	/^    double t1, t2, countmax;$/;"	m	struct:CoMaxRes
+t2	objects.h	/^    double t1, t2, countmax;$/;"	m	struct:CoMaxRes
+t_last	objects.h	/^    double x_last, y_last, t_last, offset;$/;"	m	struct:Trajectory
+target	IntervalTree.h	/^    Window *target;$/;"	m	struct:IntervalTree
+time	objects.h	/^    double latitude, longitude, time, act_speed;$/;"	m	struct:DataPoint
+time	tree_utilities.h	/^    double lat, lon, time, speed;$/;"	m	struct:sample
+time_compare	tree_utilities.h	/^bool time_compare(obj lt, obj rt)$/;"	f
+time_final	objects.h	/^    double x_initial, y_initial, time_initial, x_final, y_final, time_final, speed, di;$/;"	m	struct:Line
+time_initial	objects.h	/^    double x_initial, y_initial, time_initial, x_final, y_final, time_final, speed, di;$/;"	m	struct:Line
+time_offset	tree_utilities.h	/^    double time_offset;$/;"	m	struct:obj
+tol	buildAllTPRTrees.cpp	22;"	d	file:
+tol	tree_utilities.h	21;"	d
+trajectories	objects.h	/^    vector<Trajectory> trajectories;$/;"	m	struct:MovingObject
+trajectory_id	objects.h	/^    int parent_id, trajectory_id, count;$/;"	m	struct:Trajectory
+trip_id	objects.h	/^    int participant_id, trip_id;$/;"	m	struct:DataPoint
+updateToNode	maxrs_utilities.h	/^Window* updateToNode(IntervalTree *cur, IntervalTree *end_node)$/;"	f
+weight	Object.h	/^    double x,y,weight;$/;"	m	struct:Object
+weight	Rectangle.h	/^    double x1, y1, x2, y2, weight;$/;"	m	struct:Rectangle
+weight	objects.h	/^    double weight, cur_x, cur_y;$/;"	m	struct:MovingObject
+width	Area.h	/^    double height, width;$/;"	m	struct:Area
+window	IntervalTree.h	/^    Window *window;$/;"	m	struct:IntervalTree
+x	Object.h	/^    double x,y,weight;$/;"	m	struct:Object
+x1	Rectangle.h	/^    double x1, y1, x2, y2, weight;$/;"	m	struct:Rectangle
+x2	Rectangle.h	/^    double x1, y1, x2, y2, weight;$/;"	m	struct:Rectangle
+x_final	objects.h	/^    double x_initial, y_initial, time_initial, x_final, y_final, time_final, speed, di;$/;"	m	struct:Line
+x_initial	objects.h	/^    double x_initial, y_initial, time_initial, x_final, y_final, time_final, speed, di;$/;"	m	struct:Line
+x_last	objects.h	/^    double x_last, y_last, t_last, offset;$/;"	m	struct:Trajectory
+x_max	utilities.h	/^ double x_max, x_min, y_max, y_min,$/;"	v
+x_min	utilities.h	/^ double x_max, x_min, y_max, y_min,$/;"	v
+y	Object.h	/^    double x,y,weight;$/;"	m	struct:Object
+y1	Rectangle.h	/^    double x1, y1, x2, y2, weight;$/;"	m	struct:Rectangle
+y2	Rectangle.h	/^    double x1, y1, x2, y2, weight;$/;"	m	struct:Rectangle
+y_final	objects.h	/^    double x_initial, y_initial, time_initial, x_final, y_final, time_final, speed, di;$/;"	m	struct:Line
+y_initial	objects.h	/^    double x_initial, y_initial, time_initial, x_final, y_final, time_final, speed, di;$/;"	m	struct:Line
+y_last	objects.h	/^    double x_last, y_last, t_last, offset;$/;"	m	struct:Trajectory
+y_max	utilities.h	/^ double x_max, x_min, y_max, y_min,$/;"	v
+y_min	utilities.h	/^ double x_max, x_min, y_max, y_min,$/;"	v
