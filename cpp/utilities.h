@@ -27,10 +27,6 @@ const int IINF = 100000000;
 Area coverage(r_h, r_w);
 Area area(a_h, a_w);
 
- double x_max, x_min, y_max, y_min,
-        d_w, /// r_w/2
-        d_h; /// r_h/2
-
 map<int, int> real_id_to_object_id;
 map<int, int>:: iterator it;
 
@@ -97,43 +93,16 @@ void display(vector<MovingObject>& saved)
     printf("totalobj = %d\ntotaltraj = %d\ntotalline = %d\nmaxt = %d\n\n", totalobj, totaltraj, totalline, maxt);
 }
 
-void addToKDS(Event event)
+pair<double, double> getLocation(Line l, MovingObject &obj, double current_time)
 {
-    map<double, int>::iterator it;
-    it = index_in_kds_data.find(event.event_time);
-    if(it != index_in_kds_data.end()){ /// event time already exists
-        int index = it->second;
-        kds_data[index].push_back(event);
+    if(l.time_initial >= l.time_final){
+        cout << "Degenerate Line: time_initial>=time_final\n";
+        exit(1);
     }
-    else{
-        vector<Event> temp; /// new event time
-        temp.push_back(event); /// add event
-        kds_data.push_back(temp); ///push in kds data
 
-        index_in_kds_data[event.event_time] = kds_data.size()-1; ///update map
-        kds.push(event.event_time); ///update kds
-    }
-}
-
-long long addLineEventsToKDS(long long total_events, double current_time, double event_time){
-    //cout << "inside addLineEventsToKDS\n";
-    if(event_time > current_time){
-        Event e(total_events, NEW_SAMPLE, -1, -1, event_time);
-        addToKDS(e);
-        //cout << "total_events: " << total_events << endl;
-        total_events++;
-        //cout << "total_events: " << total_events << "\n\n";
-    }
-    return total_events;
-}
-
-long long addINIEventsToKDS(int oid1, int oid2, long long total_events, double event_time, int event_type){
-    Event e(total_events, event_type, oid1, oid2, event_time);
-    addToKDS(e);
-    //cout << "total_events: " << total_events << endl;
-    total_events++;
-    //cout << "total_events: " << total_events << "\n\n";
-    return total_events;
+    double x = (((current_time - l.time_initial) / (l.time_final - l.time_initial)) * (l.x_final - l.x_initial)) + l.x_initial;
+    double y = (((current_time - l.time_initial) / (l.time_final - l.time_initial)) * (l.y_final - l.y_initial)) + l.y_initial;
+    return make_pair(x, y);
 }
 
 void setCurrentLoc(Line l, MovingObject &obj, double current_time){    /// current location of object found by linear interpolation
@@ -148,6 +117,7 @@ void setCurrentLoc(Line l, MovingObject &obj, double current_time){    /// curre
     double y = (((current_time - l.time_initial) / (l.time_final - l.time_initial)) * (l.y_final - l.y_initial)) + l.y_initial;
     obj.cur_y = y;
 }
+
 
 bool isWithin(double x, double y, Rectangle rect){
     return (x >= rect.x1 && x <= rect.x2) && (y >= rect.y1 && y <= rect.y2);
