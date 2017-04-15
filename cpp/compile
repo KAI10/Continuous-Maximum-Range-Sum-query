@@ -1,1 +1,1 @@
-g++ -std=c++0x co_maxrs.cpp -lspatialindex_c -lspatialindex -o co_maxrs.out
+g++ -O2 co_maxrs.cpp -lspatialindex_c -lspatialindex -o co_maxrs.out
