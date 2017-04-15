@@ -14,7 +14,7 @@ using namespace std;
 ///for changing mode (indexed <-> non-indexed)
 ///comment out this line for non-indexed mode
 ///and another line in event_handlers.h
-#define INDEX 1
+//#define INDEX 1
 
 vector<vector<bool> > adjMatrix;
 vector<MovingObject> saved;
@@ -22,7 +22,19 @@ vector<MovingObject> saved;
 map<int, int> dict1; ///maps oid -> index in saved(MovingObject)
 
 int numberOfObjects;
+double current_time;
 
+vector<Trajectory> current_trajectories;
+vector<Line> current_lines;
+vector<int> current_objects; ///object id of current objects
+map<int, int> object_line_map; ///# keep a map of object->line
+
+double x_max, x_min, y_max, y_min,
+        d_w, /// r_w/2
+        d_h; /// r_h/2
+
+
+/*
 /// can't be solved using just priority queue
 /// idea: use the priority queue to save index in a vector
 /// that index contains events at that time
@@ -30,6 +42,7 @@ int numberOfObjects;
 map<double, int> index_in_kds_data;
 vector<vector<Event> > kds_data;
 priority_queue<double, vector<double>, greater<double> > kds;
+*/
 
 #ifdef INDEX
     #include "tree_utilities.h"
@@ -39,6 +52,10 @@ priority_queue<double, vector<double>, greater<double> > kds;
 #endif // INDEX
 
 #include "utilities.h"
+#include "kds.hpp"
+kds_spatial kds;
+
+#include "kds_utilities.hpp"
 #include "event_handlers.h"
 
 int main(int argc, char **argv)
@@ -95,14 +112,22 @@ int main(int argc, char **argv)
     for(int iteration=0; iteration<1; iteration++){
         printf("iteration = %d\n", iteration);
         long long total_events = 0;
-        double current_time = 0;
+        
+        current_time = 0;
         double next_event = DINF; ///means next event time
         double next_query = DINF;
 
+        /*
         vector<Trajectory> current_trajectories;
         vector<Line> current_lines;
         vector<int> current_objects; ///object id of current objects
         map<int, int> object_line_map; ///# keep a map of object->line
+        */
+
+        current_trajectories.clear();
+        current_lines.clear();
+        current_objects.clear();
+        object_line_map.clear();
 
         ///clear kds realted data structres if iteration > 0
 
@@ -132,7 +157,7 @@ int main(int argc, char **argv)
 
         /// Setup the total area and coverage
         /// Find the extreme values, and set accordingly
-        x_max = 0, x_min = DINF, y_max = 0, y_min = DINF,
+        x_max = -DINF, x_min = DINF, y_max = -DINF, y_min = DINF,
         d_w = coverage.width/2.0, /// r_w/2
         d_h = coverage.height/2.0; /// r_h/2
 
@@ -174,6 +199,7 @@ int main(int argc, char **argv)
         }
 
         printf("x_max = %f\nx_min = %f\ny_max = %f\ny_min = %f\n", x_max, x_min, y_max, y_min);
+        kds.set();
 
         area.height = y_max - y_min + r_h,
         area.width = x_max - x_min + r_w;
@@ -182,9 +208,6 @@ int main(int argc, char **argv)
         restrict_precision(area.width);
 
         cout << area.height << ' ' << area.width << endl;
-
-        /// considering all samples are taken at same time, so one line change event for all current lines
-        total_events = addLineEventsToKDS(total_events, current_time, current_lines[0].time_final);
 
         /// Create the current rectangles
         /// setup current coordinates for objects
@@ -197,6 +220,10 @@ int main(int argc, char **argv)
             saved[index].cur_x = l.x_initial;
             saved[index].cur_y = l.y_initial;
         }
+
+        /// considering all samples are taken at same time, so one line change event for all current lines
+        total_events = addLineEventsToKDS(total_events, current_time, current_lines[0].time_final);
+
 
         #ifdef INDEX
 
@@ -291,6 +318,9 @@ int main(int argc, char **argv)
         }
         cout << "After preli O(n^2), total_events: " << total_events << endl;
 
+        kds.display();
+        exit(1);
+
 
         /// perform the initial maxrs
         vector<Object> objects;
@@ -344,21 +374,21 @@ int main(int argc, char **argv)
 
         //cout << kds.size() << endl;
 
-        while(kds.size() > 0){
+        while(!kds.empty()){
             //if(current_lines.size() < 500) break;
-            double next_event_time = kds.top();
-            kds.pop();
-
+            vector<Event> cur_event = kds.pop();
+            double next_event_time = cur_event[0].event_time;
+            
             cout << "next_event_time: " << next_event_time << endl;
 
             current_time = next_event_time;
 
-            int index = index_in_kds_data[next_event_time];
-
+            //int index = index_in_kds_data[next_event_time];
+            
             //cout << "index: " << index << endl;
 
-            for(int i=0; i<kds_data[index].size(); i++){
-                Event event = kds_data[index][i];
+            for(int i=0; i<cur_event.size(); i++){
+                Event event = cur_event[i];
 
                 bool changed;
                 CoMaxRes nmaxrs;
