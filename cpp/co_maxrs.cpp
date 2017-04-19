@@ -53,7 +53,7 @@ priority_queue<double, vector<double>, greater<double> > kds;
 
 #include "utilities.h"
 #include "kds.hpp"
-kds_spatial kds;
+kds_temporal kds;
 
 #include "kds_utilities.hpp"
 #include "event_handlers.h"
@@ -318,8 +318,8 @@ int main(int argc, char **argv)
         }
         cout << "After preli O(n^2), total_events: " << total_events << endl;
 
-        kds.display();
-        exit(1);
+        //kds.display();
+        //exit(1);
 
 
         /// perform the initial maxrs

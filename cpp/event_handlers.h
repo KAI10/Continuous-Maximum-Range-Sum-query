@@ -7,7 +7,7 @@
 
 ///for changing mode (indexed <-> non-indexed)
 ///comment out this line for non-indexed mode
-#define INDEX 1
+//#define INDEX 1
 
 long long handle_NEW_SAMPLE_Event(Event event, vector<int> &current_objects, vector<Line> &current_lines, vector<Trajectory> &current_trajectories,
                                 map<int, int> &object_line_map, int iteration, long long total_events, double current_time,
