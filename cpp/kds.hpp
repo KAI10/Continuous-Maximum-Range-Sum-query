@@ -180,7 +180,7 @@ struct kds_greedy{
 
 typedef bimap< multiset_of<double>, set_of<pair<int, int>>> time_to_grid_index;
 
-const int xpart = 1, ypart = 1;
+const int xpart = 8, ypart = 8;
 
 struct kds_spatial
 {
@@ -243,10 +243,10 @@ struct kds_spatial
             assert(position_2.second >= y_range_min && position_2.second <= y_range_max);
 
             ///determine the cells
-            int x_1 = round((position_1.first - x_range_min) / dx),
-                y_1 = round((position_1.second - y_range_min) / dy),
-                x_2 = round((position_2.first - x_range_min) / dx),
-                y_2 = round((position_2.second - y_range_min) / dy);
+            int x_1 = floor((position_1.first - x_range_min) / dx),
+                y_1 = floor((position_1.second - y_range_min) / dy),
+                x_2 = floor((position_2.first - x_range_min) / dx),
+                y_2 = floor((position_2.second - y_range_min) / dy);
 
             //cout << "cells: " << x_1 << ' ' << y_1 << ' ' << x_2 << ' ' << y_2 << endl;
             if(x_1 == xpart) x_1--;
