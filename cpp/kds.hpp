@@ -11,7 +11,7 @@ typedef size_to_index::value_type size_position;
 typedef bimap< multiset_of<double>, set_of<int> > time_to_index;
 typedef time_to_index::value_type time_position;
 
-const int parts = 15; //# of smaller kds's
+const int parts = 100; //# of smaller kds's
 const double delta = 0.25;
 
 struct kds_greedy{
@@ -320,5 +320,90 @@ struct kds_spatial
     }
 };
 
+
+const double timeINT = 100.0; ///this value is equal to time interval between two consecutive samples
+double dt = timeINT/parts;
+
+struct kds_temporal{
+    vector<vector<Event>> kds_data;
+    multimap<double, int> kds_part[parts];
+
+    int cur_kds_index; ///will be used in pop
+    int intervalNumber; ///will be used in insert
+    int totalEvents_in_kds;
+
+    kds_temporal(){
+        cur_kds_index = 0;
+        totalEvents_in_kds = 0;
+        intervalNumber = 0;
+    }
+
+    void insert(Event event){
+        //cout << "intervalNumber: " << intervalNumber << endl;
+
+        vector<Event> temp;
+        temp.push_back(event);
+        kds_data.push_back(temp);
+        int data_index = kds_data.size()-1;
+        
+        if(event.event_type == NEW_SAMPLE){
+            //intervalNumber = event.event_time / timeINT - 1;
+
+            ///add the line change event in the last kds, as this is the last event of this interval
+            kds_part[parts-1].insert(make_pair(event.event_time, data_index));
+        }
+        else{
+            double startTime = intervalNumber * timeINT;
+            int kds_index = floor((event.event_time - startTime)/dt);
+            if(kds_index == parts) kds_index--;
+
+            kds_part[kds_index].insert(make_pair(event.event_time, data_index));
+        }
+
+        totalEvents_in_kds++;
+    }
+
+    vector<Event> pop(){
+
+        //cout << "intervalNumber: " << intervalNumber << endl;
+        
+        assert(!empty());
+        while(kds_part[cur_kds_index].empty()) cur_kds_index++; ///if no events in current (small)interval, go to next (small)interval
+        
+        //cout << "cur_kds_index: " << cur_kds_index << endl;
+        
+        int data_index = kds_part[cur_kds_index].begin()->second;
+        
+        //cout << "data_index: " << data_index << endl;
+        
+        vector<Event> ret = kds_data[data_index];
+
+        kds_part[cur_kds_index].erase(kds_part[cur_kds_index].begin());
+        if(kds_part[cur_kds_index].empty()) cur_kds_index++;
+
+        totalEvents_in_kds--;
+        if(totalEvents_in_kds == 0){
+            intervalNumber++;
+            cur_kds_index = 0;
+        }
+        ///assert that all events of previous interval are processed
+        //for(int i=0; i<parts; i++) assert(kds_part[i].empty());
+        return ret; 
+    }
+    
+    void set(){}
+
+    bool empty(){
+        return (totalEvents_in_kds == 0);
+    }
+
+    void display(){
+        for(int i=0; i<parts; i++){
+            cout << kds_part[i].size() << ' ';
+            cout << endl;
+        }  
+    }
+        
+};
 
 
