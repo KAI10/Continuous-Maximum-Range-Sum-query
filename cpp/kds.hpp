@@ -11,7 +11,7 @@ typedef size_to_index::value_type size_position;
 typedef bimap< multiset_of<double>, set_of<int> > time_to_index;
 typedef time_to_index::value_type time_position;
 
-const int parts = 100; //# of smaller kds's
+const int parts = 8; //# of smaller kds's
 const double delta = 0.25;
 
 struct kds_greedy{
@@ -180,7 +180,7 @@ struct kds_greedy{
 
 typedef bimap< multiset_of<double>, set_of<pair<int, int>>> time_to_grid_index;
 
-const int xpart = 8, ypart = 8;
+const int xpart = 5, ypart = 5;
 
 struct kds_spatial
 {
@@ -340,7 +340,7 @@ struct kds_temporal{
 
     void insert(Event event){
         //cout << "intervalNumber: " << intervalNumber << endl;
-
+        //cout << "INSERT\n";
         vector<Event> temp;
         temp.push_back(event);
         kds_data.push_back(temp);
@@ -348,15 +348,17 @@ struct kds_temporal{
         
         if(event.event_type == NEW_SAMPLE){
             //intervalNumber = event.event_time / timeINT - 1;
-
+            //cout << "INSERTING NEW SAMPLE EVENT\n";
             ///add the line change event in the last kds, as this is the last event of this interval
             kds_part[parts-1].insert(make_pair(event.event_time, data_index));
         }
         else{
+            //cout << "INSERTING OD/DO event\n";
             double startTime = intervalNumber * timeINT;
             int kds_index = floor((event.event_time - startTime)/dt);
             if(kds_index == parts) kds_index--;
 
+            //cout << "kds_index: " << kds_index << endl;
             kds_part[kds_index].insert(make_pair(event.event_time, data_index));
         }
 
@@ -364,7 +366,7 @@ struct kds_temporal{
     }
 
     vector<Event> pop(){
-
+        //cout << "POP\n";
         //cout << "intervalNumber: " << intervalNumber << endl;
         
         assert(!empty());
@@ -382,10 +384,17 @@ struct kds_temporal{
         if(kds_part[cur_kds_index].empty()) cur_kds_index++;
 
         totalEvents_in_kds--;
-        if(totalEvents_in_kds == 0){
+        if(ret[0].event_type == NEW_SAMPLE){
             intervalNumber++;
             cur_kds_index = 0;
         }
+        /*
+        if(totalEvents_in_kds == 0){
+            intervalNumber++;
+            cur_kds_index = 0;
+            cout << "intervalNumber: " << intervalNumber << endl;
+        }
+        */
         ///assert that all events of previous interval are processed
         //for(int i=0; i<parts; i++) assert(kds_part[i].empty());
         return ret; 
