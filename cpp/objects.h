@@ -204,10 +204,20 @@ struct Event
     }
 };
 
+struct pos
+{
+    double lat, lon;
+    pos(double lat, double lon){
+        this->lat = lat;
+        this->lon = lon;
+    }
+};
+
 struct CoMaxRes
 {
     double t1, t2, countmax;
     vector<int> lobj;
+    vector<pos> location;
 
     CoMaxRes(){}
     CoMaxRes(double t1, double t2, vector<int> lobj, double countmax){
@@ -223,4 +233,16 @@ struct CoMaxRes
         this->lobj = lobj;
         this->countmax = countmax;
     }
+
+    void recordLocation(vector<MovingObject> & saved, double x_min, double y_min, double d_w, double d_h){
+        for(int i=0; i<lobj.size(); i++){
+            location.push_back(pos(saved[lobj[i]].cur_x + x_min - d_w, saved[lobj[i]].cur_y + y_min - d_h));
+        }
+    }
+
+    void recordLocation(CoMaxRes &p){
+        for(int i=0; i<p.location.size(); i++){
+            location.push_back(pos(p.location[i].lat, p.location[i].lon));
+        }
+    }    
 };

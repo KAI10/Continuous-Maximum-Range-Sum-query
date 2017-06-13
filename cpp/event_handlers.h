@@ -248,7 +248,7 @@ long long handle_NEW_SAMPLE_Event(Event event, vector<int> &current_objects, vec
       //  << object_line_map.size() << "\n";
 
     if(!disappeares){ ///no inSolution object/s disappeared so solution unchanged
-        cout << "solution unchanged\n";
+        //cout << "solution unchanged\n";
         nmaxrs = current_maxrs;
         changed = false;
         return total_events;
@@ -263,7 +263,7 @@ long long handle_NEW_SAMPLE_Event(Event event, vector<int> &current_objects, vec
         return total_events;
     }
 
-    cout << "maxrs recomputation required\n";
+    //cout << "maxrs recomputation required\n";
 
     /// perform the maxrs as some inSolution object/s have disappeared
     double ncountmax = current_maxrs.countmax - disappeared;
@@ -291,7 +291,7 @@ long long handle_NEW_SAMPLE_Event(Event event, vector<int> &current_objects, vec
     }
 
     Window *opt_window = process_maxrs(area, coverage, objects);
-    cout << "score: " << opt_window->score << endl;
+    //cout << "score: " << opt_window->score << endl;
 
     /// Find the objects within MaxRS solution
     double x_co = (opt_window->l + opt_window->r) / 2.0, y_co = opt_window->h;
@@ -374,7 +374,7 @@ long long handle_INT_Event(Event event, vector<Line> &current_lines, map<int, in
         return total_events;
     }
 
-    puts("Event not pruned");
+    //puts("Event not pruned");
 
     /// check if exactly one of oid1/oid2 is inSolution
     if((saved[index1].inSolution && !saved[index2].inSolution) || (!saved[index1].inSolution && saved[index2].inSolution)){
@@ -429,7 +429,7 @@ long long handle_INT_Event(Event event, vector<Line> &current_lines, map<int, in
         /// if not all adjacent codes below will be executed
     }
 
-    puts("Didn't fall into lemma 5");
+    //puts("Didn't fall into lemma 5");
 
     /// else, i.e. oid1, oid2 both are not inSolution, or oid2 is not adjacent to all inSolution objects
     /// If there is a new solution, then oid1, oid2 must be part of that solution.
@@ -475,7 +475,7 @@ long long handle_INT_Event(Event event, vector<Line> &current_lines, map<int, in
     Window *opt_window = process_maxrs(area, coverage, objects);
 
     /// GETTING segmentation fault here!!!!!!!!
-    cout << "Score: " << opt_window->score << endl;
+    //cout << "Score: " << opt_window->score << endl;
 
     /// if the resulting score is not greater than current score, then solution remains same
     if(opt_window->score <= current_maxrs.countmax){
@@ -602,7 +602,7 @@ long long handle_NON_INT_Event(Event event, vector<Line> &current_lines, map<int
     double x_co = (opt_window->l + opt_window->r) / 2.0, y_co = opt_window->h;
     Rectangle rect(max(0.0, x_co - d_w), max(0.0, y_co - d_h), min(area.width, x_co + d_w), min(area.height, y_co + d_h));
 
-    cout << "score: " << opt_window->score << endl;
+    //cout << "score: " << opt_window->score << endl;
 
     /// We already know there must be a change, so no need to check if changed
     vector<int> nlobj;

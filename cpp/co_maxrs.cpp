@@ -7,6 +7,7 @@
  */
 
 #include <bits/stdc++.h>
+#include <json/json.h>
 #include "maxrs.cpp"
 #include "objects.h"
 using namespace std;
@@ -110,7 +111,7 @@ int main(int argc, char **argv)
     //display();
 
     for(int iteration=0; iteration<1; iteration++){
-        printf("iteration = %d\n", iteration);
+        //printf("iteration = %d\n", iteration);
         long long total_events = 0;
         
         current_time = 0;
@@ -144,8 +145,8 @@ int main(int argc, char **argv)
             }
         }
 
-        printf("# of Current trajectories: %d\n", (int)current_trajectories.size());
-        printf("# of Current lines: %d\n", (int)current_lines.size());
+        //printf("# of Current trajectories: %d\n", (int)current_trajectories.size());
+        //printf("# of Current lines: %d\n", (int)current_lines.size());
 
         /// reset the object variables
         for(int i=0; i<saved.size(); i++){
@@ -198,7 +199,7 @@ int main(int argc, char **argv)
             current_lines[i].y_final += d_h - y_min;
         }
 
-        printf("x_max = %f\nx_min = %f\ny_max = %f\ny_min = %f\n", x_max, x_min, y_max, y_min);
+        //printf("x_max = %f\nx_min = %f\ny_max = %f\ny_min = %f\n", x_max, x_min, y_max, y_min);
         kds.set();
 
         area.height = y_max - y_min + r_h,
@@ -207,7 +208,7 @@ int main(int argc, char **argv)
         restrict_precision(area.height);
         restrict_precision(area.width);
 
-        cout << area.height << ' ' << area.width << endl;
+        //cout << area.height << ' ' << area.width << endl;
 
         /// Create the current rectangles
         /// setup current coordinates for objects
@@ -316,7 +317,7 @@ int main(int argc, char **argv)
                 }
             }
         }
-        cout << "After preli O(n^2), total_events: " << total_events << endl;
+        //cout << "After preli O(n^2), total_events: " << total_events << endl;
 
         //kds.display();
         //exit(1);
@@ -359,18 +360,20 @@ int main(int argc, char **argv)
             }
         }
 
+        current_maxrs.recordLocation(saved, x_min, y_min, d_w, d_h);
         //cout << "inSolution objects:\n";
         //for(int i=0; i<current_maxrs.lobj.size(); i++){
           //  cout << current_maxrs.lobj[i] << endl;
         //}
 
+        /*
         cout << "Time range: " << current_maxrs.t1 << " to " << current_maxrs.t2 << "\n";
         cout << "[ " << current_maxrs.lobj[0];
         for(int j=1; j<current_maxrs.lobj.size(); j++) cout << ", " << current_maxrs.lobj[j];
         cout << " ]\n";
-
-        printf("Preliminary Result:\nTime range: %f to %f\nlength: %d\nscore: %f\n", current_maxrs.t1, current_maxrs.t2,
-                (int)current_maxrs.lobj.size(), current_maxrs.countmax);
+        */
+        //printf("Preliminary Result:\nTime range: %f to %f\nlength: %d\nscore: %f\n", current_maxrs.t1, current_maxrs.t2,
+                //(int)current_maxrs.lobj.size(), current_maxrs.countmax);
 
         //cout << kds.size() << endl;
 
@@ -379,7 +382,7 @@ int main(int argc, char **argv)
             vector<Event> cur_event = kds.pop();
             double next_event_time = cur_event[0].event_time;
             
-            cout << "next_event_time: " << next_event_time << endl;
+            //cout << "next_event_time: " << next_event_time << endl;
 
             current_time = next_event_time;
 
@@ -394,18 +397,18 @@ int main(int argc, char **argv)
                 CoMaxRes nmaxrs;
 
                 if(event.event_type == NEW_SAMPLE){
-                    puts("NEW_SAMPLE Event\n");
+                    //puts("NEW_SAMPLE Event\n");
 
                     total_events = handle_NEW_SAMPLE_Event(event, current_objects, current_lines, current_trajectories, object_line_map,
                                             iteration, total_events, current_time, current_maxrs, nmaxrs, changed);
                 }
                 else if(event.event_type == INT){
-                    printf("DO Event between: %d %d\n", event.oid1, event.oid2);
+                    //printf("DO Event between: %d %d\n", event.oid1, event.oid2);
 
                     total_events = handle_INT_Event(event, current_lines, object_line_map, total_events, current_time, current_maxrs, nmaxrs, changed);
                 }
                 else{ ///event.event_type == NON_INT
-                    printf("OD Event between: %d %d\n", event.oid1, event.oid2);
+                    //printf("OD Event between: %d %d\n", event.oid1, event.oid2);
                     total_events = handle_NON_INT_Event(event, current_lines, object_line_map, total_events, current_time, current_maxrs, nmaxrs, changed);
                 }
 
@@ -415,8 +418,11 @@ int main(int argc, char **argv)
                     vector<int> tempobj;
                     for(int j=0; j<current_maxrs.lobj.size(); j++) tempobj.push_back(current_maxrs.lobj[j]);
                     CoMaxRes tempmaxrs(current_maxrs.t1, current_time, tempobj, current_maxrs.countmax);
+                    tempmaxrs.recordLocation(current_maxrs);
+                    
                     comaxrs.push_back(tempmaxrs);
                     current_maxrs = nmaxrs;
+                    current_maxrs.recordLocation(saved, x_min, y_min, d_w, d_h);
 
                     //cout << "# of solutions: " << comaxrs.size() << endl;
                     /*
@@ -443,23 +449,49 @@ int main(int argc, char **argv)
         vector<int> tempobj;
         for(int j=0; j<current_maxrs.lobj.size(); j++) tempobj.push_back(current_maxrs.lobj[j]);
         CoMaxRes tempmaxrs(current_maxrs.t1, current_time, tempobj, current_maxrs.countmax);
+        tempmaxrs.recordLocation(current_maxrs);
         comaxrs.push_back(tempmaxrs);
 
+        Json::Value solutions;
 
-        puts("Final Result:");
+        //puts("Final Result:");
         for(int i=0; i<comaxrs.size(); i++){
             CoMaxRes res = comaxrs[i];
-            cout << "Time range: " << res.t1 << " to " << res.t2 << "\nscore: " << res.countmax << "\nactual: " << res.lobj.size() << "\n";
-            cout << "[ ";
-            if(res.lobj.size()) cout << res.lobj[0];
-            for(int j=1; j<res.lobj.size(); j++) cout << ", " << res.lobj[j];
-            cout << " ]\n\n";
+
+            Json::Value solution;
+            solution["startTime"] = res.t1;
+            solution["endTime"] = res.t2;
+            solution["score"] = res.countmax;
+
+            Json::Value items;
+            for(int j=0; j<res.lobj.size(); j++){
+                items[j]["id"] = res.lobj[j];
+                items[j]["latitude"] = res.location[j].lat;
+                items[j]["longitude"] = res.location[j].lon;
+            }
+
+            /*
+            cout << "Time range: " << res.t1 << " to " << res.t2 << "\nscore: " << res.countmax << endl;
+            //cout << "\nactual: " << res.lobj.size() << "\n";
+            cout << "[\n";
+            if(res.lobj.size()) cout << res.lobj[0]  << ' ' << res.location[0].lat << ' ' << res.location[0].lon;
+            for(int j=1; j<res.lobj.size(); j++){ 
+                cout << ",\n" << res.lobj[j] << ' ' << res.location[j].lat << ' ' << res.location[j].lon;
+            }
+            cout << "\n]\n";
+            */
+
+            solution["items"] = items;
+            solutions[i] = solution;
         }
 
-        cout << "Total events processed: " << total_events << endl;
+        Json::Value output;
+        output["solutions"] = solutions;
+        cout << output << endl;
+        //cout << "Total events processed: " << total_events << endl;
     }
 
-    cout << "elapsed time: " << double( clock () - begin_time ) /  CLOCKS_PER_SEC << " seconds\n";
+    //cout << "elapsed time: " << double( clock () - begin_time ) /  CLOCKS_PER_SEC << " seconds\n";
 
     return 0;
 }
