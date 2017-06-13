@@ -5,9 +5,9 @@
 *.out
 *.dat
 *.idx
-log*
+*log*
+*.xlsx
 *~
 generateResultData*
-39*
 ../tree/
 *.txt*
