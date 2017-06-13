@@ -130,7 +130,7 @@ struct MovingObject
         this->object_id = oid;
         this->weight = weight;
         this->inSolution = inSolution;
-        this->int_num - int_num;
+        this->int_num = int_num;
 
         cur_x = x1;
         cur_y = y1;
