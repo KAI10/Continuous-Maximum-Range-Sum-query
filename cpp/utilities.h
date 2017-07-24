@@ -79,6 +79,42 @@ int readFromMNGT(char* fileName, int num, vector<DataPoint>& datapoints)
     return nextID;
 }
 
+void saveLocations(vector<MovingObject> &saved, string inputData)
+{
+    Json::Value objects;
+
+    for(int i=0; i<saved.size(); i++){
+        Json::Value object;
+
+        //assert(i == saved[i].object_id);
+
+        object["id"] = saved[i].object_id;
+
+        Json::Value locations;
+        Trajectory trj = saved[i].trajectories[0];
+
+        locations[0]["lat"] = trj.path[0].x_initial;
+        locations[0]["lng"] = trj.path[0].y_initial;
+        locations[0]["time"] = trj.path[0].time_initial;
+        for(int j=0; j<trj.path.size(); j++){
+            locations[j+1]["lat"] = trj.path[j].x_final;
+            locations[j+1]["lng"] = trj.path[j].y_final;
+            locations[j+1]["time"] = trj.path[j].time_final;
+        }
+        object["locations"] = locations;
+        objects[i] = object;
+    }
+
+    Json::Value output;
+    output["objects"] = objects;
+    
+    ofstream fout(inputData+"_locations.json");
+    //fout << std::fixed;
+    //fout << std::setprecision(5);
+    fout << output << endl;
+    fout.close();
+}
+
 void display(vector<MovingObject>& saved)
 {
     int totaltraj = 0, totalobj = 0, totalline = 0, maxt = 0;

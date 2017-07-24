@@ -313,7 +313,7 @@ struct kds_spatial
         cout << "kds status:\n";
         for(int i=0; i<xpart; i++){
             for(int j=0; j<ypart; j++){
-                printf("%6d ", kds_part[i][j].size());
+                printf("%6d ", (int)kds_part[i][j].size());
             }
             cout << endl;
         }

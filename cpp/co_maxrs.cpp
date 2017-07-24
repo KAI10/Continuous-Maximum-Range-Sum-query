@@ -7,7 +7,7 @@
  */
 
 #include <bits/stdc++.h>
-#include <json/json.h>
+#include <jsoncpp/json/json.h>
 #include "maxrs.cpp"
 #include "objects.h"
 using namespace std;
@@ -109,6 +109,7 @@ int main(int argc, char **argv)
     datapoints.clear();
 
     //display();
+    saveLocations(saved, string(argv[1]));
 
     for(int iteration=0; iteration<1; iteration++){
         //printf("iteration = %d\n", iteration);
@@ -135,13 +136,20 @@ int main(int argc, char **argv)
         /// Setting-up an overall result variable
         vector<CoMaxRes> comaxrs;
 
+        double startTime = DBL_MAX;
+        for(int i=0; i<saved.size(); i++){
+            startTime = min(startTime, saved[i].trajectories[iteration].path[0].time_initial);
+        }
+
         /// setup the lines, trajectories, etc.
         for(int i=0; i<saved.size(); i++){
             if(iteration < saved[i].trajectories.size()){
-                current_trajectories.push_back(saved[i].trajectories[iteration]);
-                current_lines.push_back(saved[i].trajectories[iteration].path[0]);
-                object_line_map[saved[i].object_id] = (int)current_lines.size()-1;
-                current_objects.push_back(saved[i].object_id);
+                if(fabs(saved[i].trajectories[iteration].path[0].time_initial - startTime) < 1e-6){
+                    current_trajectories.push_back(saved[i].trajectories[iteration]);
+                    current_lines.push_back(saved[i].trajectories[iteration].path[0]);
+                    object_line_map[saved[i].object_id] = (int)current_lines.size()-1;
+                    current_objects.push_back(saved[i].object_id);
+                }
             }
         }
 
@@ -458,6 +466,8 @@ int main(int argc, char **argv)
         for(int i=0; i<comaxrs.size(); i++){
             CoMaxRes res = comaxrs[i];
 
+            if(res.lobj.size() == 0) continue;
+
             Json::Value solution;
             solution["startTime"] = res.t1;
             solution["endTime"] = res.t2;
@@ -465,9 +475,9 @@ int main(int argc, char **argv)
 
             Json::Value items;
             for(int j=0; j<res.lobj.size(); j++){
-                items[j]["id"] = res.lobj[j];
-                items[j]["latitude"] = res.location[j].lat;
-                items[j]["longitude"] = res.location[j].lon;
+                items[j] = res.lobj[j];
+                //items[j]["lat"] = res.location[j].lat;
+                //items[j]["lng"] = res.location[j].lon;
             }
 
             /*
@@ -487,7 +497,12 @@ int main(int argc, char **argv)
 
         Json::Value output;
         output["solutions"] = solutions;
-        cout << output << endl;
+
+        ofstream fout(string(argv[1])+".json");
+        //fout << std::fixed;
+        //fout << std::setprecision(5);
+        fout << output << endl;
+        fout.close();
         //cout << "Total events processed: " << total_events << endl;
     }
 
