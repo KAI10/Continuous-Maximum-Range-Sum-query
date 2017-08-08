@@ -86,22 +86,22 @@ struct Trajectory
     void addLineToTrajectory(double x1, double y1, double t1, double speed=20){
         double calcspeed = 0;
         if (x_last || y_last || t_last){
-            t1 = t1 - offset;
+            //t1 = t1 - offset;
 
             /// MAKING TIME SAMPLING UNIFORM
             /// (x1,y1,t1) is the new time sample
-            t1 = t_last + delta_t;  /// UNCOMMENT THIS LINE
+            //t1 = t_last + delta_t;  /// UNCOMMENT THIS LINE
 
             double distance = dist(x_last, y_last, x1, y1)/1000/1.6093; /// dist measured in mile
             double td = t1 - t_last;
             if (td > 0) calcspeed = (distance / float(td)) * 3600;
         }
         else{
-            offset = t1;
-            t1 = t1 - offset;
+            offset = 1;
+            //t1 = t1 - offset;
         }
 
-        if (t_last != t1){   /// starts to add lines from 2nd point
+        if (x_last || y_last || t_last){   /// starts to add lines from 2nd point
             Line line = Line(parent_id, trajectory_id, count, x_last, y_last, t_last, x1, y1, t1, (calcspeed * 1000 * 1.6093) / 3600);
             path.push_back(line);
             count++;

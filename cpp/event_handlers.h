@@ -20,8 +20,8 @@ long long handle_NEW_SAMPLE_Event(Event event, vector<int> &current_objects, vec
     vector<Trajectory> nCurrent_trajectories; ///will change if an object disappeares
     map<int , int> nObject_line_map;
 
-    bool disappeares = false;
-    double disappeared = 0.0;
+    bool disappeares = false, appeares = false;
+    double disappeared = 0.0, appeared = 0.0;
 
     ///setup current location of all current objects
     for(int i=0; i<current_lines.size(); i++){
@@ -95,6 +95,21 @@ long long handle_NEW_SAMPLE_Event(Event event, vector<int> &current_objects, vec
                 }
             }
         }
+    }
+
+    for(int i=0; i<saved.size(); i++){
+        int id = saved[i].object_id;
+        map<int, int>::iterator it = object_line_map.find(id);
+        if(it != object_line_map.end()) continue;
+        if(fabs(current_time - saved[i].trajectories[iteration].path[0].time_initial) > 1e-6) continue;
+
+        appeares = true;
+        appeared += saved[i].weight;
+
+        nCurrent_objects.push_back(id);
+        nCurrent_lines.push_back(saved[i].trajectories[iteration].path[0]);
+        nCurrent_trajectories.push_back(saved[i].trajectories[iteration]);
+        nObject_line_map[id] = (int)nCurrent_lines.size() - 1;
     }
 
     //cout << "appear disappear handled\n";
@@ -242,12 +257,17 @@ long long handle_NEW_SAMPLE_Event(Event event, vector<int> &current_objects, vec
     current_trajectories = nCurrent_trajectories;
     object_line_map = nObject_line_map;
 
+    nCurrent_objects.clear();
+    nCurrent_lines.clear();
+    nCurrent_trajectories.clear();
+    nObject_line_map.clear();
+
     //cout << "DS'S updated\n";
 
     //cout << "\n\n" << current_objects.size() << "\n" << current_lines.size() << "\n" << current_trajectories.size() << "\n"
       //  << object_line_map.size() << "\n";
 
-    if(!disappeares){ ///no inSolution object/s disappeared so solution unchanged
+    if(!disappeares && !appeares){ ///no inSolution object/s disappeared so solution unchanged
         //cout << "solution unchanged\n";
         nmaxrs = current_maxrs;
         changed = false;
@@ -257,7 +277,7 @@ long long handle_NEW_SAMPLE_Event(Event event, vector<int> &current_objects, vec
     if(current_lines.size() == 0){
         nmaxrs.lobj.clear();
         nmaxrs.t1 = current_time;
-        nmaxrs.t2 = 100000;
+        nmaxrs.t2 = DBL_MAX;
         nmaxrs.countmax = 0;
         changed = true;
         return total_events;
@@ -266,7 +286,7 @@ long long handle_NEW_SAMPLE_Event(Event event, vector<int> &current_objects, vec
     //cout << "maxrs recomputation required\n";
 
     /// perform the maxrs as some inSolution object/s have disappeared
-    double ncountmax = current_maxrs.countmax - disappeared;
+    double ncountmax = current_maxrs.countmax - disappeared + appeared;
 
     vector<Object> objects;
     for(int i=0; i<current_lines.size(); i++){
@@ -298,7 +318,7 @@ long long handle_NEW_SAMPLE_Event(Event event, vector<int> &current_objects, vec
     Rectangle rect(max(0.0, x_co - d_w), max(0.0, y_co - d_h), min(area.width, x_co + d_w), min(area.height, y_co + d_h));
 
     vector<int> lobj;
-    nmaxrs.Set(current_time, 100000, lobj, opt_window->score);
+    nmaxrs.Set(current_time, DBL_MAX, lobj, opt_window->score);
 
     ///update previous solution objects
     for(int i=0; i<current_maxrs.lobj.size(); i++){
@@ -422,7 +442,7 @@ long long handle_INT_Event(Event event, vector<Line> &current_lines, map<int, in
             double ncountmax = current_maxrs.countmax + nobj2.weight;
 
             /// create new solution object
-            nmaxrs.Set(current_time, 100000, nlobj, ncountmax);
+            nmaxrs.Set(current_time, DBL_MAX, nlobj, ncountmax);
             changed = true;
             return total_events;
         }
@@ -515,7 +535,7 @@ long long handle_INT_Event(Event event, vector<Line> &current_lines, map<int, in
     }
 
     /// Create new current_maxrs object
-    nmaxrs.Set(current_time, 100000, nlobj, opt_window->score);
+    nmaxrs.Set(current_time, DBL_MAX, nlobj, opt_window->score);
     changed = true;
     return total_events;
 }
@@ -631,7 +651,7 @@ long long handle_NON_INT_Event(Event event, vector<Line> &current_lines, map<int
     }
 
     /// Create new current_maxrs object
-    nmaxrs.Set(current_time, 100000, nlobj, opt_window->score);
+    nmaxrs.Set(current_time, DBL_MAX, nlobj, opt_window->score);
     changed = true;
     return total_events;
 }

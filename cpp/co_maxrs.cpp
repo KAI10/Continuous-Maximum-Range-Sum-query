@@ -54,7 +54,7 @@ priority_queue<double, vector<double>, greater<double> > kds;
 
 #include "utilities.h"
 #include "kds.hpp"
-kds_temporal kds;
+kds_greedy kds;
 
 #include "kds_utilities.hpp"
 #include "event_handlers.h"
@@ -109,7 +109,7 @@ int main(int argc, char **argv)
     datapoints.clear();
 
     //display();
-    saveLocations(saved, string(argv[1]));
+    //saveLocations(saved, string(argv[1]));
 
     for(int iteration=0; iteration<1; iteration++){
         //printf("iteration = %d\n", iteration);
@@ -152,6 +152,8 @@ int main(int argc, char **argv)
                 }
             }
         }
+
+        current_time = startTime;
 
         //printf("# of Current trajectories: %d\n", (int)current_trajectories.size());
         //printf("# of Current lines: %d\n", (int)current_lines.size());
@@ -352,7 +354,7 @@ int main(int argc, char **argv)
         Rectangle rect(max(0.0, x_co - d_w), max(0.0, y_co - d_h), min(area.width, x_co + d_w), min(area.height, y_co + d_h));
 
         vector<int> lobj;
-        CoMaxRes current_maxrs(current_time, 100000, lobj, opt_window->score);
+        CoMaxRes current_maxrs(current_time, DBL_MAX, lobj, opt_window->score);
 
         for(int i=0; i<current_lines.size(); i++){
             Line l = current_lines[i];
@@ -394,6 +396,8 @@ int main(int argc, char **argv)
 
             current_time = next_event_time;
 
+            if(current_time > 1211033884 - 360*2) break;
+
             //int index = index_in_kds_data[next_event_time];
             
             //cout << "index: " << index << endl;
@@ -405,7 +409,7 @@ int main(int argc, char **argv)
                 CoMaxRes nmaxrs;
 
                 if(event.event_type == NEW_SAMPLE){
-                    //puts("NEW_SAMPLE Event\n");
+                    printf("NEW_SAMPLE Event @ %0.9f\n", current_time);
 
                     total_events = handle_NEW_SAMPLE_Event(event, current_objects, current_lines, current_trajectories, object_line_map,
                                             iteration, total_events, current_time, current_maxrs, nmaxrs, changed);
@@ -471,7 +475,7 @@ int main(int argc, char **argv)
             Json::Value solution;
             solution["startTime"] = res.t1;
             solution["endTime"] = res.t2;
-            solution["score"] = res.countmax;
+            //solution["score"] = res.countmax;
 
             Json::Value items;
             for(int j=0; j<res.lobj.size(); j++){

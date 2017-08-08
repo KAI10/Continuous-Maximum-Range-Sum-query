@@ -16,8 +16,6 @@ Event	objects.h	/^    Event(int event_id, int event_type, int oid1, int oid2, do
 Event	objects.h	/^struct Event$/;"	s
 HORIZON	tree_utilities.h	/^const double HORIZON = 1e10;$/;"	v
 IINF	utilities.h	/^const int IINF = 100000000;$/;"	v
-INDEX	co_maxrs.cpp	17;"	d	file:
-INDEX	event_handlers.h	10;"	d
 INT	objects.h	/^const int INT = 2;$/;"	v
 IntervalTree	IntervalTree.h	/^    IntervalTree(double discriminant, IntervalTree *father){$/;"	f	struct:IntervalTree
 IntervalTree	IntervalTree.h	/^struct IntervalTree$/;"	s
@@ -44,12 +42,13 @@ Window	Window.h	/^struct Window$/;"	s
 a_h	utilities.h	/^const double a_h = 100;$/;"	v
 a_w	utilities.h	/^const double a_w = 100;$/;"	v
 act_speed	objects.h	/^    double latitude, longitude, time, act_speed;$/;"	m	struct:DataPoint
-addINIEventsToKDS	utilities.h	/^long long addINIEventsToKDS(int oid1, int oid2, long long total_events, double event_time, int event_type){$/;"	f
-addLineEventsToKDS	utilities.h	/^long long addLineEventsToKDS(long long total_events, double current_time, double event_time){$/;"	f
+addINIEventsToKDS	kds_utilities.hpp	/^long long addINIEventsToKDS(int oid1, int oid2, long long total_events, double event_time, int event_type){$/;"	f
+addLineEventsToKDS	kds_utilities.hpp	/^long long addLineEventsToKDS(long long total_events, double current_time, double event_time){$/;"	f
 addLineToTrajectory	objects.h	/^    void addLineToTrajectory(double x1, double y1, double t1, double speed=20){$/;"	f	struct:Trajectory
 addPointsToTrajectory	objects.h	/^    void addPointsToTrajectory(int trajectory_id, double x, double y, double t, double speed=20){$/;"	f	struct:MovingObject
-addToKDS	utilities.h	/^void addToKDS(Event event)$/;"	f
+addToKDS	kds_utilities.hpp	/^void addToKDS(Event event)$/;"	f
 addTrajectoryToMovingObject	objects.h	/^    void addTrajectoryToMovingObject(int trajectory_id){$/;"	f	struct:MovingObject
+balance	kds.hpp	/^    void balance(){$/;"	f	struct:kds_greedy
 buildIntervalTree	maxrs_utilities.h	/^IntervalTree* buildIntervalTree(int st, int ed, vector<double> listOfPoints, IntervalTree *root)$/;"	f
 buildTree	buildAllTPRTrees.cpp	/^int buildTree(Index* idx, int take)$/;"	f
 checkTrajectoryId	objects.h	/^    bool checkTrajectoryId(int trajectory_id){$/;"	f	struct:MovingObject
@@ -58,16 +57,22 @@ computeEventTime	utilities.h	/^void computeEventTime(Line l1, Line l2, double p1
 count	objects.h	/^    int parent_id, trajectory_id, count;$/;"	m	struct:Trajectory
 countmax	objects.h	/^    double t1, t2, countmax;$/;"	m	struct:CoMaxRes
 createIndex	buildAllTPRTrees.cpp	/^Index* createIndex(const char *diskFileName, unsigned long capacity)$/;"	f
+cur_kds_index	kds.hpp	/^    int cur_kds_index; \/\/\/will be used in pop$/;"	m	struct:kds_temporal
 cur_x	objects.h	/^    double weight, cur_x, cur_y;$/;"	m	struct:MovingObject
 cur_y	objects.h	/^    double weight, cur_x, cur_y;$/;"	m	struct:MovingObject
-d1	co_maxrs.cpp	37;"	d	file:
+current_lines	co_maxrs.cpp	/^vector<Line> current_lines;$/;"	v
+current_objects	co_maxrs.cpp	/^vector<int> current_objects; \/\/\/object id of current objects$/;"	v
+current_time	co_maxrs.cpp	/^double current_time;$/;"	v
+current_trajectories	co_maxrs.cpp	/^vector<Trajectory> current_trajectories;$/;"	v
+d1	co_maxrs.cpp	51;"	d	file:
 d1	tree_utilities.h	22;"	d
-d2	co_maxrs.cpp	38;"	d	file:
+d2	co_maxrs.cpp	52;"	d	file:
 d2	tree_utilities.h	23;"	d
-d_h	utilities.h	/^        d_h; \/\/\/ r_h\/2$/;"	v
-d_w	utilities.h	/^        d_w, \/\/\/ r_w\/2$/;"	v
+d_h	co_maxrs.cpp	/^        d_h; \/\/\/ r_h\/2$/;"	v
+d_w	co_maxrs.cpp	/^        d_w, \/\/\/ r_w\/2$/;"	v
 decIntervalTree	maxrs_utilities.h	/^void decIntervalTree(double h, double l, double r, double weight, IntervalTree *root)$/;"	f
 decToNode	maxrs_utilities.h	/^void decToNode(double l, double r, double h, double weight, IntervalTree *root, char flag)$/;"	f
+delta	kds.hpp	/^const double delta = 0.25;$/;"	v
 delta_t	objects.h	/^const double delta_t = 100;$/;"	v
 di	objects.h	/^    double x_initial, y_initial, time_initial, x_final, y_final, time_final, speed, di;$/;"	m	struct:Line
 dict1	co_maxrs.cpp	/^map<int, int> dict1; \/\/\/maps oid -> index in saved(MovingObject)$/;"	v
@@ -75,11 +80,20 @@ discriminant	IntervalTree.h	/^    double discriminant;$/;"	m	struct:IntervalTree
 diskFileName	tree_utilities.h	/^string diskFileName;$/;"	v
 display	IntervalTree.h	/^    void display(){$/;"	f	struct:IntervalTree
 display	Window.h	/^    void display(){$/;"	f	struct:Window
+display	kds.hpp	/^    void display(){$/;"	f	struct:kds_greedy
+display	kds.hpp	/^    void display(){$/;"	f	struct:kds_spatial
+display	kds.hpp	/^    void display(){$/;"	f	struct:kds_temporal
 display	utilities.h	/^void display(vector<MovingObject>& saved)$/;"	f
 displayLine	objects.h	/^    void displayLine(){$/;"	f	struct:Line
 displayMovingObject	objects.h	/^    void displayMovingObject(){$/;"	f	struct:MovingObject
 displayTrajectory	objects.h	/^    void displayTrajectory(){$/;"	f	struct:Trajectory
 dist	objects.h	/^double dist(double x1, double y1, double x2, double y2)$/;"	f
+dt	kds.hpp	/^double dt = timeINT\/parts;$/;"	v
+dx	kds.hpp	/^    double x_range_min, x_range_max, y_range_min, y_range_max, dx, dy;$/;"	m	struct:kds_spatial
+dy	kds.hpp	/^    double x_range_min, x_range_max, y_range_min, y_range_max, dx, dy;$/;"	m	struct:kds_spatial
+empty	kds.hpp	/^    bool empty(){$/;"	f	struct:kds_greedy
+empty	kds.hpp	/^    bool empty(){$/;"	f	struct:kds_spatial
+empty	kds.hpp	/^    bool empty(){$/;"	f	struct:kds_temporal
 event_id	objects.h	/^    int event_id, event_type, oid1, oid2;$/;"	m	struct:Event
 event_time	objects.h	/^    double event_time;$/;"	m	struct:Event
 event_type	objects.h	/^    int event_id, event_type, oid1, oid2;$/;"	m	struct:Event
@@ -89,6 +103,7 @@ findLeafNode	maxrs_utilities.h	/^IntervalTree* findLeafNode(IntervalTree *root, 
 findNodeV	maxrs_utilities.h	/^IntervalTree* findNodeV(IntervalTree *root, double l, double r, double h)$/;"	f
 getBottomLeftPoint	tree_utilities.h	/^inline PT getBottomLeftPoint(PT p)$/;"	f
 getIndexFromDisk	tree_utilities.h	/^Index* getIndexFromDisk(const char* diskFileName, unsigned long capacity)$/;"	f
+getLocation	utilities.h	/^pair<double, double> getLocation(Line l, MovingObject &obj, double current_time)$/;"	f
 getUpperRightPoint	tree_utilities.h	/^inline PT getUpperRightPoint(PT p)$/;"	f
 getVelocity	tree_utilities.h	/^PT getVelocity(sample &one, sample &two)$/;"	f
 grand_id	objects.h	/^    int grand_id, parent_id, line_id;$/;"	m	struct:Line
@@ -105,19 +120,34 @@ incIntervalTree	maxrs_utilities.h	/^void incIntervalTree(double h, double l, dou
 incToNodeL	maxrs_utilities.h	/^IntervalTree* incToNodeL(double l, double r, double h, double weight, IntervalTree *root)$/;"	f
 incToNodeR	maxrs_utilities.h	/^IntervalTree* incToNodeR(double l, double r, double h, double weight, IntervalTree *root)$/;"	f
 incToNodeV	maxrs_utilities.h	/^IntervalTree* incToNodeV(double l, double r, double h, double weight, IntervalTree *root)$/;"	f
-index_in_kds_data	co_maxrs.cpp	/^map<double, int> index_in_kds_data;$/;"	v
+insert	kds.hpp	/^    void insert(Event event){$/;"	f	struct:kds_greedy
+insert	kds.hpp	/^    void insert(Event event){$/;"	f	struct:kds_spatial
+insert	kds.hpp	/^    void insert(Event event){$/;"	f	struct:kds_temporal
 insertMovingRegion	tree_utilities.h	/^bool insertMovingRegion(Index *idx, sample &first, sample &second, int64_t id)$/;"	f
 insertWindow	maxrs_utilities.h	/^IntervalTree* insertWindow(Window *window, IntervalTree *root)$/;"	f
 inst	tree_utilities.h	/^    vector<sample> inst;$/;"	m	struct:obj
 int_num	objects.h	/^    int object_id, int_num;$/;"	m	struct:MovingObject
+intervalNumber	kds.hpp	/^    int intervalNumber; \/\/\/will be used in insert$/;"	m	struct:kds_temporal
 interval_tree_root	maxrs_utilities.h	/^IntervalTree *interval_tree_root = NULL;$/;"	v
 isIntersecting	utilities.h	/^bool isIntersecting(Rectangle *r1, Rectangle *r2){$/;"	f
 isWithin	utilities.h	/^bool isWithin(double x, double y, Rectangle rect){$/;"	f
 it	buildAllTPRTrees.cpp	/^map<ll, ll>::iterator it;$/;"	v
 it	utilities.h	/^map<int, int>:: iterator it;$/;"	v
-kds	co_maxrs.cpp	/^priority_queue<double, vector<double>, greater<double> > kds;$/;"	v
-kds_data	co_maxrs.cpp	/^vector<vector<Event> > kds_data;$/;"	v
+kds	co_maxrs.cpp	/^kds_greedy kds;$/;"	v
+kds_data	kds.hpp	/^    vector<vector<Event> > kds_data; \/\/container of event data$/;"	m	struct:kds_greedy
+kds_data	kds.hpp	/^    vector<vector<Event>> kds_data; \/\/container of event data$/;"	m	struct:kds_spatial
+kds_data	kds.hpp	/^    vector<vector<Event>> kds_data;$/;"	m	struct:kds_temporal
+kds_greedy	kds.hpp	/^    kds_greedy(){$/;"	f	struct:kds_greedy
+kds_greedy	kds.hpp	/^struct kds_greedy{$/;"	s
+kds_part	kds.hpp	/^    multimap<double, int> kds_part[parts]; \/\/keeps track(index in kds data) of events by time$/;"	m	struct:kds_greedy
+kds_part	kds.hpp	/^    multimap<double, int> kds_part[parts];$/;"	m	struct:kds_temporal
+kds_part	kds.hpp	/^    multimap<double, int> kds_part[xpart][ypart]; \/\/keeps track(index in kds data) of events by time$/;"	m	struct:kds_spatial
+kds_spatial	kds.hpp	/^    kds_spatial(){}$/;"	f	struct:kds_spatial
+kds_spatial	kds.hpp	/^struct kds_spatial$/;"	s
+kds_temporal	kds.hpp	/^    kds_temporal(){$/;"	f	struct:kds_temporal
+kds_temporal	kds.hpp	/^struct kds_temporal{$/;"	s
 l	Window.h	/^    double l, r, h, score;$/;"	m	struct:Window
+lat	objects.h	/^    double lat, lon;$/;"	m	struct:pos
 lat	tree_utilities.h	/^    double lat, lon, time, speed;$/;"	m	struct:sample
 lat	tree_utilities.h	/^    double lat, lon;$/;"	m	struct:PT
 latitude	objects.h	/^    double latitude, longitude, time, act_speed;$/;"	m	struct:DataPoint
@@ -129,6 +159,8 @@ line_id	objects.h	/^    int grand_id, parent_id, line_id;$/;"	m	struct:Line
 ll	buildAllTPRTrees.cpp	/^typedef long long ll;$/;"	t	file:
 ll	tree_utilities.h	/^typedef long long ll;$/;"	t
 lobj	objects.h	/^    vector<int> lobj;$/;"	m	struct:CoMaxRes
+location	objects.h	/^    vector<pos> location;$/;"	m	struct:CoMaxRes
+lon	objects.h	/^    double lat, lon;$/;"	m	struct:pos
 lon	tree_utilities.h	/^    double lat, lon, time, speed;$/;"	m	struct:sample
 lon	tree_utilities.h	/^    double lat, lon;$/;"	m	struct:PT
 longitude	objects.h	/^    double latitude, longitude, time, act_speed;$/;"	m	struct:DataPoint
@@ -141,6 +173,7 @@ mem	tree_utilities.h	19;"	d
 numberOfObjects	co_maxrs.cpp	/^int numberOfObjects;$/;"	v
 obj	tree_utilities.h	/^struct obj$/;"	s
 object_id	objects.h	/^    int object_id, int_num;$/;"	m	struct:MovingObject
+object_line_map	co_maxrs.cpp	/^map<int, int> object_line_map; \/\/\/# keep a map of object->line$/;"	v
 objects	buildAllTPRTrees.cpp	/^vector<obj> objects;$/;"	v
 offset	objects.h	/^    double x_last, y_last, t_last, offset;$/;"	m	struct:Trajectory
 oid1	objects.h	/^    int event_id, event_type, oid1, oid2;$/;"	m	struct:Event
@@ -150,9 +183,15 @@ operator <	tree_utilities.h	/^    bool operator<(const sample &p)const$/;"	f	str
 parent_id	objects.h	/^    int grand_id, parent_id, line_id;$/;"	m	struct:Line
 parent_id	objects.h	/^    int parent_id, trajectory_id, count;$/;"	m	struct:Trajectory
 participant_id	objects.h	/^    int participant_id, trip_id;$/;"	m	struct:DataPoint
+parts	kds.hpp	/^const int parts = 8; \/\/# of smaller kds's$/;"	v
 path	objects.h	/^    vector<Line> path;$/;"	m	struct:Trajectory
 pb	buildAllTPRTrees.cpp	21;"	d	file:
 pb	tree_utilities.h	20;"	d
+pop	kds.hpp	/^    vector<Event> pop(){$/;"	f	struct:kds_greedy
+pop	kds.hpp	/^    vector<Event> pop(){$/;"	f	struct:kds_spatial
+pop	kds.hpp	/^    vector<Event> pop(){$/;"	f	struct:kds_temporal
+pos	objects.h	/^    pos(double lat, double lon){$/;"	f	struct:pos
+pos	objects.h	/^struct pos$/;"	s
 preOrderTraverse	maxrs_utilities.h	/^void preOrderTraverse(IntervalTree *root)$/;"	f
 process_maxrs	maxrs.cpp	/^Window* process_maxrs(Area area, Area coverage, vector<Object> &objects)$/;"	f
 propagateExcess	maxrs_utilities.h	/^void propagateExcess(IntervalTree *root, double h)$/;"	f
@@ -164,6 +203,8 @@ readDataset	buildAllTPRTrees.cpp	/^void readDataset()$/;"	f
 readFromMNGT	utilities.h	/^int readFromMNGT(char* fileName, int num, vector<DataPoint>& datapoints)$/;"	f
 real_id_to_object_id	buildAllTPRTrees.cpp	/^map<ll, ll> real_id_to_object_id;$/;"	v
 real_id_to_object_id	utilities.h	/^map<int, int> real_id_to_object_id;$/;"	v
+recordLocation	objects.h	/^    void recordLocation(CoMaxRes &p){$/;"	f	struct:CoMaxRes
+recordLocation	objects.h	/^    void recordLocation(vector<MovingObject> & saved, double x_min, double y_min, double d_w, double d_h){$/;"	f	struct:CoMaxRes
 rect	objects.h	/^    Rectangle *rect;$/;"	m	struct:Line
 restrict_precision	maxrs_utilities.h	/^void restrict_precision(double &val)$/;"	f
 restrict_precision	maxrs_utilities.h	/^void restrict_precision(vector<Object> &objects)$/;"	f
@@ -175,10 +216,17 @@ sample	tree_utilities.h	/^    sample() {}$/;"	f	struct:sample
 sample	tree_utilities.h	/^    sample(double lt, double ln, double tm, double sp)$/;"	f	struct:sample
 sample	tree_utilities.h	/^struct sample$/;"	s
 sampleNumber	tree_utilities.h	/^int sampleNumber;$/;"	v
+saveLocations	utilities.h	/^void saveLocations(vector<MovingObject> &saved, string inputData)$/;"	f
 saved	co_maxrs.cpp	/^vector<MovingObject> saved;$/;"	v
 score	Window.h	/^    double l, r, h, score;$/;"	m	struct:Window
+set	kds.hpp	/^    void set(){$/;"	f	struct:kds_spatial
+set	kds.hpp	/^    void set(){}$/;"	f	struct:kds_greedy
+set	kds.hpp	/^    void set(){}$/;"	f	struct:kds_temporal
 setCurrentLoc	utilities.h	/^void setCurrentLoc(Line l, MovingObject &obj, double current_time){    \/\/\/ current location of object found by linear interpolation$/;"	f
 showDataset	buildAllTPRTrees.cpp	/^void showDataset(int ind)$/;"	f
+size_position	kds.hpp	/^typedef size_to_index::value_type size_position;$/;"	t
+size_to_index	kds.hpp	/^typedef bimap< multiset_of<int>, set_of<int> > size_to_index;$/;"	t
+smap	kds.hpp	/^    size_to_index smap; \/\/keeps track(index) of the smallest kds$/;"	m	struct:kds_greedy
 speed	objects.h	/^    double x_initial, y_initial, time_initial, x_final, y_final, time_final, speed, di;$/;"	m	struct:Line
 speed	tree_utilities.h	/^    double lat, lon, time, speed;$/;"	m	struct:sample
 t1	objects.h	/^    double t1, t2, countmax;$/;"	m	struct:CoMaxRes
@@ -187,12 +235,19 @@ t_last	objects.h	/^    double x_last, y_last, t_last, offset;$/;"	m	struct:Traje
 target	IntervalTree.h	/^    Window *target;$/;"	m	struct:IntervalTree
 time	objects.h	/^    double latitude, longitude, time, act_speed;$/;"	m	struct:DataPoint
 time	tree_utilities.h	/^    double lat, lon, time, speed;$/;"	m	struct:sample
+timeINT	kds.hpp	/^const double timeINT = 100.0; \/\/\/this value is equal to time interval between two consecutive samples$/;"	v
 time_compare	tree_utilities.h	/^bool time_compare(obj lt, obj rt)$/;"	f
 time_final	objects.h	/^    double x_initial, y_initial, time_initial, x_final, y_final, time_final, speed, di;$/;"	m	struct:Line
 time_initial	objects.h	/^    double x_initial, y_initial, time_initial, x_final, y_final, time_final, speed, di;$/;"	m	struct:Line
 time_offset	tree_utilities.h	/^    double time_offset;$/;"	m	struct:obj
+time_position	kds.hpp	/^typedef time_to_index::value_type time_position;$/;"	t
+time_to_grid_index	kds.hpp	/^typedef bimap< multiset_of<double>, set_of<pair<int, int>>> time_to_grid_index;$/;"	t
+time_to_index	kds.hpp	/^typedef bimap< multiset_of<double>, set_of<int> > time_to_index;$/;"	t
+tmap	kds.hpp	/^    time_to_grid_index tmap; \/\/keeps track(index) of the kds with earliest event$/;"	m	struct:kds_spatial
+tmap	kds.hpp	/^    time_to_index tmap; \/\/keeps track(index) of the kds with earliest event$/;"	m	struct:kds_greedy
 tol	buildAllTPRTrees.cpp	22;"	d	file:
 tol	tree_utilities.h	21;"	d
+totalEvents_in_kds	kds.hpp	/^    int totalEvents_in_kds;$/;"	m	struct:kds_temporal
 trajectories	objects.h	/^    vector<Trajectory> trajectories;$/;"	m	struct:MovingObject
 trajectory_id	objects.h	/^    int parent_id, trajectory_id, count;$/;"	m	struct:Trajectory
 trip_id	objects.h	/^    int participant_id, trip_id;$/;"	m	struct:DataPoint
@@ -208,13 +263,19 @@ x2	Rectangle.h	/^    double x1, y1, x2, y2, weight;$/;"	m	struct:Rectangle
 x_final	objects.h	/^    double x_initial, y_initial, time_initial, x_final, y_final, time_final, speed, di;$/;"	m	struct:Line
 x_initial	objects.h	/^    double x_initial, y_initial, time_initial, x_final, y_final, time_final, speed, di;$/;"	m	struct:Line
 x_last	objects.h	/^    double x_last, y_last, t_last, offset;$/;"	m	struct:Trajectory
-x_max	utilities.h	/^ double x_max, x_min, y_max, y_min,$/;"	v
-x_min	utilities.h	/^ double x_max, x_min, y_max, y_min,$/;"	v
+x_max	co_maxrs.cpp	/^double x_max, x_min, y_max, y_min,$/;"	v
+x_min	co_maxrs.cpp	/^double x_max, x_min, y_max, y_min,$/;"	v
+x_range_max	kds.hpp	/^    double x_range_min, x_range_max, y_range_min, y_range_max, dx, dy;$/;"	m	struct:kds_spatial
+x_range_min	kds.hpp	/^    double x_range_min, x_range_max, y_range_min, y_range_max, dx, dy;$/;"	m	struct:kds_spatial
+xpart	kds.hpp	/^const int xpart = 5, ypart = 5;$/;"	v
 y	Object.h	/^    double x,y,weight;$/;"	m	struct:Object
 y1	Rectangle.h	/^    double x1, y1, x2, y2, weight;$/;"	m	struct:Rectangle
 y2	Rectangle.h	/^    double x1, y1, x2, y2, weight;$/;"	m	struct:Rectangle
 y_final	objects.h	/^    double x_initial, y_initial, time_initial, x_final, y_final, time_final, speed, di;$/;"	m	struct:Line
 y_initial	objects.h	/^    double x_initial, y_initial, time_initial, x_final, y_final, time_final, speed, di;$/;"	m	struct:Line
 y_last	objects.h	/^    double x_last, y_last, t_last, offset;$/;"	m	struct:Trajectory
-y_max	utilities.h	/^ double x_max, x_min, y_max, y_min,$/;"	v
-y_min	utilities.h	/^ double x_max, x_min, y_max, y_min,$/;"	v
+y_max	co_maxrs.cpp	/^double x_max, x_min, y_max, y_min,$/;"	v
+y_min	co_maxrs.cpp	/^double x_max, x_min, y_max, y_min,$/;"	v
+y_range_max	kds.hpp	/^    double x_range_min, x_range_max, y_range_min, y_range_max, dx, dy;$/;"	m	struct:kds_spatial
+y_range_min	kds.hpp	/^    double x_range_min, x_range_max, y_range_min, y_range_max, dx, dy;$/;"	m	struct:kds_spatial
+ypart	kds.hpp	/^const int xpart = 5, ypart = 5;$/;"	v

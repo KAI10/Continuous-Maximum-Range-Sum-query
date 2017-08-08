@@ -53,9 +53,9 @@ int readFromMNGT(char* fileName, int num, vector<DataPoint>& datapoints)
         fgets(str, 100, fp);
 
         real_id_to_object_id.clear();
-        while(fscanf(fp, "%d %lf %s %lf %lf", &participant_id, &datatime, str, &latitude, &longitude) != EOF){
+        while(fscanf(fp, "%d %lf %lf %lf", &participant_id, &datatime, &latitude, &longitude) != EOF){
 
-            //printf("%d %f %s %f %f\n", participant_id, datatime, str, latitude, longitude);
+            //printf("%d %f %f %f\n", participant_id, datatime, latitude, longitude);
             trip_id = 1;
 
             it = real_id_to_object_id.find(participant_id);
@@ -68,7 +68,7 @@ int readFromMNGT(char* fileName, int num, vector<DataPoint>& datapoints)
                 nextID++;
             }
 
-            datatime *= 10;
+            //datatime *= 10;
             act_speed = 20;
             datapoints.push_back(DataPoint(participant_id, trip_id, latitude, longitude, datatime, act_speed));
         }
@@ -81,14 +81,52 @@ int readFromMNGT(char* fileName, int num, vector<DataPoint>& datapoints)
 
 void saveLocations(vector<MovingObject> &saved, string inputData)
 {
-    Json::Value objects;
+    int numberOfParts = 10;
+    //Json::Value objects[numberOfParts];
 
+    for(int part=0; part<numberOfParts; part++){
+        Json::Value objects;
+
+        for(int i=part; i<saved.size(); i+=numberOfParts){
+            Json::Value object;
+
+            //assert(i == saved[i].object_id);
+            int id = saved[i].object_id;;
+            object["id"] = id;
+
+            Json::Value locations;
+            Trajectory trj = saved[i].trajectories[0];
+
+            locations[0]["lat"] = trj.path[0].x_initial;
+            locations[0]["lng"] = trj.path[0].y_initial;
+            locations[0]["time"] = trj.path[0].time_initial;
+            for(int j=0; j<trj.path.size(); j++){
+                locations[j+1]["lat"] = trj.path[j].x_final;
+                locations[j+1]["lng"] = trj.path[j].y_final;
+                locations[j+1]["time"] = trj.path[j].time_final;
+            }
+            object["locations"] = locations;
+            objects[id / numberOfParts] = object;
+        }
+
+        Json::Value output;
+        output["objects"] = objects;
+        
+        ofstream fout(inputData+"_locations_"+to_string(part)+".json");
+        //fout << std::fixed;
+        //fout << std::setprecision(5);
+        fout << output << endl;
+        fout.close();
+    }
+
+
+    /*
     for(int i=0; i<saved.size(); i++){
         Json::Value object;
 
         //assert(i == saved[i].object_id);
-
-        object["id"] = saved[i].object_id;
+        int id = saved[i].object_id;;
+        object["id"] = id;
 
         Json::Value locations;
         Trajectory trj = saved[i].trajectories[0];
@@ -102,17 +140,20 @@ void saveLocations(vector<MovingObject> &saved, string inputData)
             locations[j+1]["time"] = trj.path[j].time_final;
         }
         object["locations"] = locations;
-        objects[i] = object;
+        objects[id % numberOfParts][id / numberOfParts] = object;
     }
 
-    Json::Value output;
-    output["objects"] = objects;
-    
-    ofstream fout(inputData+"_locations.json");
-    //fout << std::fixed;
-    //fout << std::setprecision(5);
-    fout << output << endl;
-    fout.close();
+    for(int i=0; i<numberOfParts; i++){
+        Json::Value output;
+        output["objects"] = objects[i];
+        
+        ofstream fout(inputData+"_locations_"+to_string(i)+".json");
+        //fout << std::fixed;
+        //fout << std::setprecision(5);
+        fout << output << endl;
+        fout.close();
+    }
+    */
 }
 
 void display(vector<MovingObject>& saved)

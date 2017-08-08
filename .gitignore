@@ -11,3 +11,6 @@
 generateResultData*
 ../tree/
 *.txt*
+*.json
+*.bak
+*_0
