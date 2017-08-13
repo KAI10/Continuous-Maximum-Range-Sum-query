@@ -109,7 +109,7 @@ int main(int argc, char **argv)
     datapoints.clear();
 
     //display();
-    //saveLocations(saved, string(argv[1]));
+    saveLocations(saved, string(argv[1]));
 
     for(int iteration=0; iteration<1; iteration++){
         //printf("iteration = %d\n", iteration);

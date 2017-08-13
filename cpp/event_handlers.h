@@ -113,6 +113,22 @@ long long handle_NEW_SAMPLE_Event(Event event, vector<int> &current_objects, vec
     }
 
     //cout << "appear disappear handled\n";
+    
+    for(int i=0; i<nCurrent_trajectories.size(); i++){
+        Trajectory trj = nCurrent_trajectories[i];
+        for(int j=0; j<trj.path.size(); j++){
+            Line l = trj.path[j];
+            x_min = min(l.x_initial, x_min);
+            y_min = min(l.y_initial, y_min);
+            x_max = max(l.x_initial, x_max);
+            y_max = max(l.y_initial, y_max);
+        }
+        Line l = trj.path[(int)(trj.path.size()-1)];
+        x_min = min(l.x_final, x_min);
+        y_min = min(l.y_final, y_min);
+        x_max = max(l.x_final, x_max);
+        y_max = max(l.y_final, y_max);
+    }
 
     /// need to update in current trajectories
     for(int i=0; i<nCurrent_trajectories.size(); i++){
@@ -133,6 +149,12 @@ long long handle_NEW_SAMPLE_Event(Event event, vector<int> &current_objects, vec
         nCurrent_lines[i].x_final += d_w - x_min;
         nCurrent_lines[i].y_final += d_h - y_min;
     }
+
+    area.height = y_max - y_min + r_h,
+    area.width = x_max - x_min + r_w;
+
+    restrict_precision(area.height);
+    restrict_precision(area.width);
 
     //cout << "new location set\n";
 

@@ -17,14 +17,14 @@ using namespace std;
 
 void restrict_precision(double &val)
 {
-    val = roundf(val * 100000) / 100000;
+    val = roundf(val * 1000000000) / 1000000000;
 }
 
 void restrict_precision(vector<Object> &objects)
 {
     for(int i=0; i<objects.size(); i++){
-        objects[i].x = roundf(objects[i].x * 100000) / 100000;
-        objects[i].y = roundf(objects[i].y * 100000) / 100000;
+        restrict_precision(objects[i].x);
+        restrict_precision(objects[i].y);
     }
 }
 
