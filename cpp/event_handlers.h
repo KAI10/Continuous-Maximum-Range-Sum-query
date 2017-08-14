@@ -114,6 +114,8 @@ long long handle_NEW_SAMPLE_Event(Event event, vector<int> &current_objects, vec
 
     //cout << "appear disappear handled\n";
     
+    x_max = -DINF, x_min = DINF, y_max = -DINF, y_min = DINF;
+    
     for(int i=0; i<nCurrent_trajectories.size(); i++){
         Trajectory trj = nCurrent_trajectories[i];
         for(int j=0; j<trj.path.size(); j++){
@@ -130,6 +132,7 @@ long long handle_NEW_SAMPLE_Event(Event event, vector<int> &current_objects, vec
         y_max = max(l.y_final, y_max);
     }
 
+    /*
     /// need to update in current trajectories
     for(int i=0; i<nCurrent_trajectories.size(); i++){
         //Trajectory trj = current_trajectories[i];
@@ -141,6 +144,7 @@ long long handle_NEW_SAMPLE_Event(Event event, vector<int> &current_objects, vec
             nCurrent_trajectories[i].path[j].y_final += d_h - y_min;
         }
     }
+    */
 
     /// and in current lines
     for(int i=0; i<nCurrent_lines.size(); i++){

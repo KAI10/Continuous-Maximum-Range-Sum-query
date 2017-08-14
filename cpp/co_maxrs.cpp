@@ -188,6 +188,7 @@ int main(int argc, char **argv)
             y_max = max(l.y_final, y_max);
         }
 
+        /*
         /// need to update in current trajectories
         for(int i=0; i<current_trajectories.size(); i++){
             //Trajectory trj = current_trajectories[i];
@@ -200,6 +201,7 @@ int main(int argc, char **argv)
                 current_trajectories[i].path[j].y_final += d_h - y_min;
             }
         }
+        */
 
         /// and in current lines
         for(int i=0; i<current_lines.size(); i++){
@@ -470,7 +472,7 @@ int main(int argc, char **argv)
         for(int i=0; i<comaxrs.size(); i++){
             CoMaxRes res = comaxrs[i];
 
-            if(res.lobj.size() == 0) continue;
+            //if(res.lobj.size() == 0) continue;
 
             Json::Value solution;
             solution["startTime"] = res.t1;

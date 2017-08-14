@@ -1,1 +1,1 @@
-g++ -O2 co_maxrs.cpp -lspatialindex_c -lspatialindex -ljsoncpp -o co_maxrs.out
+g++ -std=c++0x -O2 co_maxrs.cpp -ljsoncpp -o co_maxrs.out
