@@ -5,7 +5,7 @@ import heapq
 import py_treap
 import collections
 from datetime import datetime as dt
-from scipy.spatial.distance import cdist
+#from scipy.spatial.distance import cdist
 
 import sys
 from objects import *
@@ -51,10 +51,12 @@ f_time = dt.strptime(first_date_s, fmt)
 
 
 def distance(x1, y1, x2, y2):
-    XA = np.array([[x1, y1]])
-    XB = np.array([[x2, y2]])
-    Y = cdist(XA, XB, 'euclidean')
-    return Y[0][0]
+    #XA = np.array([[x1, y1]])
+    #XB = np.array([[x2, y2]])
+    #Y = cdist(XA, XB, 'euclidean')
+    #return Y[0][0]
+    dx, dy = x1 - x2, y1 - y2
+    return (dx*dx + dy*dy)**0.5
 
 
 def display(dict1):
@@ -777,7 +779,7 @@ def readFromMS():
 def readFromMNGT(num):
     datapoints = []
 
-    baseFileName = 'simpleBikeData.txt';
+    baseFileName = '../gps_points_smoothed_sorted.csv';
 
     # ASHIK: This var is used to assign id to objects
     nextID = 0
@@ -785,7 +787,7 @@ def readFromMNGT(num):
     for i in range(num):
         name = baseFileName + '_' + str(i)
         csvfile = open(name, 'rb')
-        csvreader = csv.reader(csvfile, delimiter=' ')
+        csvreader = csv.reader(csvfile, delimiter=',')
         mp = {}
 
         # this map will be used for all the files, so clear it every time
@@ -793,11 +795,11 @@ def readFromMNGT(num):
 
         for row in csvreader:
             '''print ', '.join(row)'''
-            if row[0] == 'Object_Id':
+            if row[0] == 'participant_id':
                 continue
 
-            latitude = float(row[3])
-            longitude = float(row[4])
+            latitude = float(row[2])
+            longitude = float(row[3])
             #val = utm.from_latlon(latitude, longitude)
             #latitude = val[0]
             #longitude = val[1]
@@ -816,7 +818,7 @@ def readFromMNGT(num):
             # if participant_id not in mp:
             # mp[participant_id]= rd.uniform(5, 20)
             # datatime = int(row[1])*mp[participant_id]
-            datatime = int(row[1]) * 10
+            datatime = int(row[4]) * 10
             act_speed = 20.0
             dp = DataPoint(participant_id, trip_id, latitude, longitude, datatime, act_speed)
             datapoints.append(dp)
@@ -899,7 +901,7 @@ if __name__ == "__main__":
     #  plt.cla()
     #  plt.clf()
     #
-
+    '''
     time_iter = []
 
     # read from the file the completion time for each iteration
@@ -907,6 +909,7 @@ if __name__ == "__main__":
         csvreader2 = csv.reader(csvfile2, delimiter=' ')
         for row in csvreader2:
             time_iter.append(float(row[2]))
+    '''
 
     display(dict1)
     allQuery = []
@@ -1131,8 +1134,8 @@ if __name__ == "__main__":
 
         t1 = time.clock()
         while len(kds) != 0:
-            if len(current_lines) < 500:
-                break
+            #if len(current_lines) < 500:
+                #break
             if len(kds) != 0:
                 next_event = list(kds)[0]
 
@@ -1147,7 +1150,7 @@ if __name__ == "__main__":
                     total_events, nmaxrs, changed = handleEvent(h[2], current_lines, current_objects, total_events, kds, dict1, iteration,
                                                                 current_time, object_line_map, current_maxrs, d_w, d_h, adjMatrix)
                     if changed:
-                        print current_time
+                        #print current_time
                         tempobj = []
                         for lo in current_maxrs.lobj:
                             tempobj.append(lo)
