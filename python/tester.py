@@ -18,4 +18,5 @@ for e in reversed(es): a.push(e)
 
 while not a.empty():
     x = a.pop()
-    print x.event_time
+    for e in x:
+        print e.event_time

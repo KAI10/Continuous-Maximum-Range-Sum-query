@@ -54,21 +54,18 @@ class greedy_event_queue(event_queue):
 		earliest_time, earliest_part_index = self.tmap.getFirst()
 		earliest_event_time = earliest_time[0]
 
-		# retrieve the event from that part
+		# retrieve the events from that part
 		earliest_event_kds = self.kds[earliest_part_index]
-		earliest_event = earliest_event_kds[earliest_event_time][0]
+		earliest_event = earliest_event_kds[earliest_event_time]
 		
 		# delete event from kds and from tmap
-		del self.kds[earliest_part_index][earliest_event_time][0]
-		if len(self.kds[earliest_part_index][earliest_event_time]) == 0:
-			del self.kds[earliest_part_index][earliest_event_time]
+		del self.kds[earliest_part_index][earliest_event_time]
 
 		self.tmap.delete(earliest_time)
 
 		# insert in tmap the new earliest event for that part
-		selected_kds_part_event_list = list(self.kds[earliest_part_index])
-		if len(selected_kds_part_event_list) > 0:
-			new_earliest_event_time = selected_kds_part_event_list[0]
+		if len(self.kds[earliest_part_index]) > 0:
+			new_earliest_event_time = self.kds[earliest_part_index].find_min()
 			self.tmap.update((new_earliest_event_time, earliest_time[1]), earliest_part_index)
 
 		# update size of that part in smap
@@ -96,7 +93,7 @@ class greedy_event_queue(event_queue):
 		inserted_event_times = []
 
 		for i in range(transfer_size):
-			last_event_key = list(self.kds[largest_part_index])[-1]
+			last_event_key = self.kds[largest_part_index].find_max()
 			last_event = self.kds[largest_part_index][ last_event_key ]
 
 			# delete from largest kds part

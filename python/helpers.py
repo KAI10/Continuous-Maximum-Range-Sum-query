@@ -40,12 +40,12 @@ class bidict:
         return self.vk.get(value, None)
 
     def getFirst(self):
-        lst = list(self.kv)
-        return (lst[0], self.kv[lst[0]])
+        key = self.kv.find_min()
+        return (key, self.kv[key])
 
     def getLast(self):
-        lst = list(self.kv)
-        return (lst[-1], self.kv[lst[-1]])
+        key = self.kv.find_max()
+        return (key, self.kv[key])
 
     def status(self):
         for key, value in self.kv.items(): print key[0], value

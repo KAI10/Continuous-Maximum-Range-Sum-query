@@ -7,6 +7,8 @@ import collections
 from datetime import datetime as dt
 #from scipy.spatial.distance import cdist
 
+from kds_greedy import greedy_event_queue
+
 import sys
 from objects import *
 from maxrs import *
@@ -109,13 +111,7 @@ def getTimeInSeconds(timestr):
 
 
 def addToKDS(kds, event):
-    if event.event_time in kds:
-        heapq.heappush(kds[event.event_time], (event.event_type, event.event_id, event))
-    else:
-        hlist = []
-        heapq.heappush(hlist, (event.event_type, event.event_id, event))
-        kds[event.event_time] = hlist
-    return
+    kds.push(event)
 
 
 def addLineEventsToKDS(kds, line, total_events, current_time):
@@ -919,7 +915,7 @@ if __name__ == "__main__":
     ###################################### Main working loop #############################################################################
     for iteration in range(1):
         print iteration
-        kds = py_treap.treap()
+        
         total_events = 0
         current_time = 0.0
         next_event = 100000.0
@@ -1024,6 +1020,8 @@ if __name__ == "__main__":
         # plt.show()
         # plt.clf()
 
+        kds = greedy_event_queue(5, 0.25)
+
         # LINE CHANGE EVENT BEING ADDED
         # INSTEAD OF LOOP, ADD ONLY ONE LINE CHANGE EVENT HERE
         for line in current_lines:
@@ -1123,41 +1121,32 @@ if __name__ == "__main__":
         print "Preliminary Result: ", current_maxrs.t1, ", ", current_maxrs.t2, ", ", len(current_maxrs.lobj), ", ", current_maxrs.countmax
 
         # While there are events, keep processing
-        next_event = list(kds)[0]
 
         # next_query=current_queries[0][0]
         # if len(current_lines) <153:
         # break;
 
-        print("NO. of entries in kds: ", len(kds))
+        #print("NO. of entries in kds: ", len(kds))
         events_processed = 0;
 
         t1 = time.clock()
-        while len(kds) != 0:
-            #if len(current_lines) < 500:
-                #break
-            if len(kds) != 0:
-                next_event = list(kds)[0]
-
-                # process the events
-                current_time = next_event
-                hlist = kds[list(kds)[0]]   # hlist(list of events) contains events occuring at current time
-
-                # print("Size of hlist: ", len(hlist))
-
-                for h in hlist:
-                    events_processed += 1
-                    total_events, nmaxrs, changed = handleEvent(h[2], current_lines, current_objects, total_events, kds, dict1, iteration,
-                                                                current_time, object_line_map, current_maxrs, d_w, d_h, adjMatrix)
-                    if changed:
-                        #print current_time
-                        tempobj = []
-                        for lo in current_maxrs.lobj:
-                            tempobj.append(lo)
-                        tempmaxrs = CoMaxRes(current_maxrs.t1, current_time, tempobj, current_maxrs.countmax)
-                        comaxrs.append(tempmaxrs)
-                        current_maxrs = nmaxrs
-                del kds[list(kds)[0]]
+        while not kds.empty():
+            next_event = kds.pop()
+            
+            # process the events
+            current_time = next_event[0].event_time
+            for h in next_event:
+                events_processed += 1
+                total_events, nmaxrs, changed = handleEvent(h, current_lines, current_objects, total_events, kds, dict1, iteration,
+                                                            current_time, object_line_map, current_maxrs, d_w, d_h, adjMatrix)
+                if changed:
+                    #print current_time
+                    tempobj = []
+                    for lo in current_maxrs.lobj:
+                        tempobj.append(lo)
+                    tempmaxrs = CoMaxRes(current_maxrs.t1, current_time, tempobj, current_maxrs.countmax)
+                    comaxrs.append(tempmaxrs)
+                    current_maxrs = nmaxrs
 
         print("NO. of events processed: ", events_processed)
 
